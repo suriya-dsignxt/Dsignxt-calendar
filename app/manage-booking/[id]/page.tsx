@@ -274,20 +274,20 @@ export default function GuestManageBookingPage() {
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       <header className="sticky top-0 z-50 border-b border-white/20 backdrop-blur-xl bg-white/70 dark:bg-zinc-900/70 shadow-sm transition-all">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4 md:py-5">
-          <div className="flex items-center gap-4">
-             <Button variant="ghost" size="icon" onClick={() => setIsVerified(false)} className="rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+        <div className="container mx-auto flex items-center justify-between px-4 py-4 md:py-5 gap-3">
+          <div className="flex items-center gap-3 overflow-hidden">
+             <Button variant="ghost" size="icon" onClick={() => setIsVerified(false)} className="rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors shrink-0">
                 <ArrowLeft className="h-5 w-5" />
              </Button>
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md shadow-primary/20">
-              <CalendarDays className="h-6 w-6" />
+            <div className="flex h-10 w-10 md:h-11 md:w-11 shrink-0 items-center justify-center rounded-xl md:rounded-2xl bg-primary text-primary-foreground shadow-md shadow-primary/20">
+              <CalendarDays className="h-5 w-5 md:h-6 md:w-6" />
             </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight">Manage Booking</h1>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">{appointment?.title}</p>
+            <div className="min-w-0">
+              <h1 className="text-base md:text-xl font-bold tracking-tight truncate">Manage Booking</h1>
+              <p className="text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-widest truncate">{appointment?.title}</p>
             </div>
           </div>
-          <Badge variant={appointment?.status === 'approved' ? 'default' : 'secondary'} className="px-4 py-1.5 rounded-full shadow-sm text-xs font-bold uppercase transition-all hover:scale-105">
+          <Badge variant={appointment?.status === 'approved' ? 'default' : 'secondary'} className="px-3 py-1 md:px-4 md:py-1.5 rounded-full shadow-sm text-[10px] md:text-xs font-bold uppercase transition-all shrink-0">
             {appointment?.status}
           </Badge>
         </div>
@@ -340,12 +340,12 @@ export default function GuestManageBookingPage() {
 
             {/* Rescheduling Interface */}
             <div className="lg:col-span-5 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-               <div className="flex flex-col gap-2 p-1">
-                  <h2 className="text-3xl font-black tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent px-1">Reschedule Your Session</h2>
-                  <p className="text-muted-foreground text-base px-1">Modify your current booking to a time that fits your schedule better.</p>
+               <div className="flex flex-col gap-2 p-1 text-center md:text-left">
+                  <h2 className="text-2xl md:text-3xl font-black tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent px-1">Reschedule Your Session</h2>
+                  <p className="text-muted-foreground text-sm md:text-base px-1">Modify your current booking to a time that fits your schedule better.</p>
                </div>
                
-               <div className="grid gap-8 md:grid-cols-5">
+               <div className="grid gap-8 grid-cols-1 md:grid-cols-5">
                   <Card className="md:col-span-3 border-white/20 dark:border-zinc-800 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md shadow-xl rounded-2xl overflow-hidden self-start transition-all hover:shadow-2xl">
                     <CardHeader className="pb-3 border-b border-white/10">
                       <div className="flex items-center justify-between">
@@ -362,9 +362,9 @@ export default function GuestManageBookingPage() {
                       </div>
                     </CardHeader>
                     <CardContent className="p-5">
-                      <div className="grid grid-cols-7 gap-2.5 text-center">
+                      <div className="grid grid-cols-7 gap-1 md:gap-2.5 text-center">
                         {["S", "M", "T", "W", "T", "F", "S"].map((d, idx) => (
-                          <div key={`${d}-${idx}`} className="text-[10px] font-black text-muted-foreground/30 uppercase pb-2">{d}</div>
+                          <div key={`${d}-${idx}`} className="text-[9px] md:text-[10px] font-black text-muted-foreground/30 uppercase pb-2">{d}</div>
                         ))}
                         {days.map(day => {
                           const available = isDateAvailable(day)
@@ -377,7 +377,7 @@ export default function GuestManageBookingPage() {
                               onClick={() => { setSelectedDate(day); setSelectedSlots([]); }}
                               disabled={!available}
                               className={cn(
-                                "group relative h-11 w-full rounded-2xl text-xs font-bold transition-all duration-300",
+                                "group relative h-9 w-full md:h-11 rounded-lg md:rounded-2xl text-[10px] md:text-xs font-bold transition-all duration-300",
                                 !isSameMonth(day, currentMonth) && "opacity-10",
                                 available && !selected && "bg-zinc-100/50 dark:bg-zinc-800/30 hover:bg-primary/20 hover:scale-105 active:scale-95",
                                 !available && "bg-transparent opacity-20 cursor-not-allowed",
@@ -386,7 +386,7 @@ export default function GuestManageBookingPage() {
                               )}
                             >
                               {format(day, "d")}
-                              {isTdy && !selected && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />}
+                              {isTdy && !selected && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0.5 h-0.5 md:w-1 md:h-1 rounded-full bg-primary" />}
                             </button>
                           )
                         })}

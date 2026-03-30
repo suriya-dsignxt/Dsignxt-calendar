@@ -1,6 +1,14 @@
-import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
+const transporter = process.env.SMTP_HOST ? nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT || '587'),
+  secure: process.env.SMTP_PORT === '465',
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+}) : null
 
 interface EmailParams {
   to: string
@@ -9,27 +17,22 @@ interface EmailParams {
 }
 
 export async function sendEmail({ to, subject, html }: EmailParams) {
-  if (!resend) {
-    console.log('Email not sent - RESEND_API_KEY not configured')
+  if (!transporter) {
+    console.log('Email not sent - SMTP not configured')
     console.log('Would send to:', to)
     console.log('Subject:', subject)
     return { success: false, error: 'Email not configured' }
   }
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: 'Calendar App <onboarding@resend.dev>',
+    const info = await transporter.sendMail({
+      from: process.env.SMTP_FROM || 'Calendar App <noreply@example.com>',
       to,
       subject,
       html,
     })
 
-    if (error) {
-      console.error('Email error:', error)
-      return { success: false, error: error.message }
-    }
-
-    return { success: true, data }
+    return { success: true, data: info }
   } catch (error) {
     console.error('Email error:', error)
     return { success: false, error: 'Failed to send email' }

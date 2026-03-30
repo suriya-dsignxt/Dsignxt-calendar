@@ -213,21 +213,21 @@ export default function BookingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-muted/50 to-background">
       <header className="border-b bg-card">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+        <div className="container mx-auto flex items-center justify-between px-4 py-4 gap-4">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary">
               <CalendarDays className="h-5 w-5 text-primary-foreground" />
             </div>
-            <div>
-              <h1 className="text-lg font-semibold">{settings?.companyName || "Book an Appointment"}</h1>
-              <p className="text-sm text-muted-foreground">Schedule a meeting with us</p>
+            <div className="min-w-0">
+              <h1 className="truncate text-base font-semibold sm:text-lg">{settings?.companyName || "Book an Appointment"}</h1>
+              <p className="truncate text-xs text-muted-foreground sm:text-sm">Schedule a meeting with us</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" className="hidden sm:flex" onClick={() => setShowManageBooking(true)}>
+          <div className="flex shrink-0 items-center gap-2">
+            <Button variant="ghost" size="sm" className="hidden sm:flex" onClick={() => setShowManageBooking(true)}>
               Manage Booking
             </Button>
-            <Button variant="outline" asChild>
+            <Button variant="outline" size="sm" asChild>
               <a href="/admin/login">Staff Login</a>
             </Button>
           </div>
@@ -252,26 +252,28 @@ export default function BookingPage() {
                     <Calendar className="h-5 w-5" />
                     Select a Date
                   </CardTitle>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-                      disabled={isSameMonth(currentMonth, new Date())}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <span className="min-w-[140px] text-center font-medium">
-                      {format(currentMonth, "MMMM yyyy")}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+                        disabled={isSameMonth(currentMonth, new Date())}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <span className="min-w-[120px] text-center text-sm font-medium sm:min-w-[140px] sm:text-base">
+                        {format(currentMonth, "MMMM yyyy")}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -279,7 +281,7 @@ export default function BookingPage() {
                   {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                     <div
                       key={day}
-                      className="p-2 text-center text-sm font-medium text-muted-foreground"
+                      className="p-1 text-center text-[10px] font-medium text-muted-foreground sm:p-2 sm:text-sm"
                     >
                       {day}
                     </div>
@@ -294,7 +296,7 @@ export default function BookingPage() {
                         onClick={() => handleDateSelect(day)}
                         disabled={!available}
                         className={cn(
-                          "relative flex h-12 items-center justify-center rounded-lg text-sm transition-all",
+                          "relative flex h-10 items-center justify-center rounded-lg text-xs transition-all sm:h-12 sm:text-sm",
                           !isSameMonth(day, currentMonth) && "text-muted-foreground/50",
                           available && !selected && "hover:bg-primary/10 cursor-pointer",
                           !available && "opacity-30 cursor-not-allowed",

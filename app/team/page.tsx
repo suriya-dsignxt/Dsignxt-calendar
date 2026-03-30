@@ -69,7 +69,7 @@ export default function TeamDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">My Assigned</CardTitle>
@@ -140,20 +140,20 @@ export default function TeamDashboardPage() {
                 {appointments.slice(0, 10).map((appointment) => (
                   <div 
                     key={appointment._id} 
-                    className="flex items-center justify-between rounded-lg border p-4 hover:bg-muted/30 transition-colors cursor-pointer"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between rounded-lg border p-4 gap-4 hover:bg-muted/30 transition-colors cursor-pointer"
                     onClick={() => setSelectedAppointment(appointment)}
                   >
                     <div className="space-y-1">
-                      <p className="font-medium">{appointment.title}</p>
-                      <p className="text-sm text-muted-foreground">{appointment.clientName}</p>
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {format(new Date(appointment.date), "MMM d, yyyy")}</div>
-                        <div className="flex items-center gap-1"><Clock className="h-3 w-3" /> {appointment.startTime} - {appointment.endTime}</div>
+                      <p className="font-medium truncate">{appointment.title}</p>
+                      <p className="text-sm text-muted-foreground truncate">{appointment.clientName}</p>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground mt-1">
+                        <div className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {format(new Date(appointment.date), "MMM d, yyyy")}</div>
+                        <div className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> {appointment.startTime} - {appointment.endTime}</div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-between sm:justify-end gap-3">
                       {getStatusBadge(appointment.status)}
-                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0 shrink-0">
                          <ArrowRight className="h-4 w-4" />
                       </Button>
                     </div>

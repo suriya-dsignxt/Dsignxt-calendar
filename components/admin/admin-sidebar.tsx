@@ -39,7 +39,7 @@ export function AdminSidebar() {
   }
 
   return (
-    <div className="flex h-screen w-64 flex-col border-r border-white/20 dark:border-white/5 bg-white/50 dark:bg-zinc-950/50 backdrop-blur-xl relative overflow-hidden transition-all duration-500">
+    <div className="hidden lg:flex h-screen w-64 flex-col border-r border-white/20 dark:border-white/5 bg-white/50 dark:bg-zinc-950/50 backdrop-blur-xl relative overflow-hidden transition-all duration-500">
       {/* Background Decorative Element */}
       <div className="absolute top-[-20%] left-[-20%] w-[150%] h-[150%] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-50 pointer-events-none" />
 

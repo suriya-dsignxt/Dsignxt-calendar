@@ -56,7 +56,7 @@ export function AIAssistant() {
             }}
             exit={{ opacity: 0, y: 20, scale: 0.95, filter: "blur(10px)" }}
             className={cn(
-              "w-[380px] bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl border border-white/20 dark:border-white/5 shadow-2xl rounded-3xl overflow-hidden flex flex-col pointer-events-auto transition-all duration-300",
+              "w-[calc(100vw-2rem)] sm:w-[380px] bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl border border-white/20 dark:border-white/5 shadow-2xl rounded-3xl overflow-hidden flex flex-col pointer-events-auto transition-all duration-300",
               isMinimized && "w-[240px]"
             )}
           >
