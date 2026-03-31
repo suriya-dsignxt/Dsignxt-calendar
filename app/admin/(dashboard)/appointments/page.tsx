@@ -308,7 +308,7 @@ export default function AppointmentsPage() {
           setAssignedTo([])
         }
       }}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-hidden flex flex-col p-0 border-white/10 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-hidden flex flex-col p-0 border-white/10 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl shadow-2xl">
           <DialogHeader className="p-6 pb-0">
             <DialogTitle className="text-xl font-black tracking-tight">{selectedAppointment?.title}</DialogTitle>
             <DialogDescription className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">
@@ -408,7 +408,7 @@ export default function AppointmentsPage() {
                             />
                             <label
                               htmlFor={`member-${member._id}`}
-                              className="text-sm font-medium leading-none cursor-pointer text-zinc-900"
+                              className="text-sm font-medium leading-none cursor-pointer"
                             >
                               {member.name}
                             </label>
@@ -449,8 +449,8 @@ export default function AppointmentsPage() {
           )}
 
           </ScrollArea>
-
-          <DialogFooter className="p-6 pt-4 border-t border-white/10 bg-muted/20">
+          
+          <DialogFooter className="p-6 pt-4 border-t border-white/10 bg-muted/20 shrink-0">
             {selectedAppointment?.status === "pending" && (
               <div className="flex gap-2 w-full">
                 <Button

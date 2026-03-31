@@ -209,7 +209,7 @@ export default function TeamAppointmentsPage() {
             </div>
           )}
           </ScrollArea>
-          <div className="p-6 pt-0 border-white/10">
+          <div className="p-6 pt-4 border-t border-white/10 bg-muted/20 shrink-0">
             <Button variant="outline" className="w-full rounded-xl border-white/10 font-bold uppercase tracking-widest text-[10px] h-10" onClick={() => setSelectedAppointment(null)}>
               Close
             </Button>
