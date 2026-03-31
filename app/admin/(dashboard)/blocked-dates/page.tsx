@@ -228,7 +228,7 @@ export default function BlockedDatesPage() {
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="h-10 w-10 text-muted-foreground hover:text-red-500 hover:bg-red-500/5 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                          className="h-10 w-10 text-muted-foreground hover:text-red-500 hover:bg-red-500/5 rounded-xl transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
                           onClick={() => handleDelete(blocked._id)}
                         >
                           <Trash2 className="h-4 w-4" />

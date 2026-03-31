@@ -99,12 +99,12 @@ export default function TeamAppointmentsPage() {
           </div>
 
           <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-            <TabsList>
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="pending">Pending</TabsTrigger>
-              <TabsTrigger value="approved">Approved</TabsTrigger>
-              <TabsTrigger value="rejected">Rejected</TabsTrigger>
-              <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
+            <TabsList className="w-full justify-start overflow-x-auto h-11 bg-muted/30 p-1 rounded-xl">
+              <TabsTrigger value="all" className="text-[10px] font-bold uppercase tracking-widest px-4 py-2">All</TabsTrigger>
+              <TabsTrigger value="pending" className="text-[10px] font-bold uppercase tracking-widest px-4 py-2">Pending</TabsTrigger>
+              <TabsTrigger value="approved" className="text-[10px] font-bold uppercase tracking-widest px-4 py-2">Approved</TabsTrigger>
+              <TabsTrigger value="rejected" className="text-[10px] font-bold uppercase tracking-widest px-4 py-2">Rejected</TabsTrigger>
+              <TabsTrigger value="cancelled" className="text-[10px] font-bold uppercase tracking-widest px-4 py-2">Cancelled</TabsTrigger>
             </TabsList>
 
             <TabsContent value={selectedTab} className="mt-4">
@@ -121,29 +121,29 @@ export default function TeamAppointmentsPage() {
                     {filteredAppointments.map((appointment) => (
                       <div
                         key={appointment._id}
-                        className="flex items-center justify-between rounded-lg border p-4 hover:bg-muted/50 transition-colors cursor-pointer"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between rounded-2xl border border-white/5 p-4 hover:bg-white/5 transition-all cursor-pointer gap-4 group"
                         onClick={() => setSelectedAppointment(appointment)}
                       >
-                        <div className="flex-1 space-y-1">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium">{appointment.title}</p>
+                        <div className="flex-1 space-y-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="font-bold text-sm tracking-tight">{appointment.title}</p>
                             {getStatusBadge(appointment.status)}
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {appointment.clientName} ({appointment.clientEmail})
+                          <p className="text-xs font-medium text-muted-foreground/80 truncate max-w-[280px] sm:max-w-md">
+                            {appointment.clientName} <span className="opacity-50 mx-1">|</span> {appointment.clientEmail}
                           </p>
-                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1">
+                          <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                            <span className="flex items-center gap-1.5 bg-black/20 dark:bg-white/5 px-2 py-1 rounded-lg">
                               <Calendar className="h-3 w-3" />
                               {format(new Date(appointment.date), "MMM d, yyyy")}
                             </span>
-                            <span className="flex items-center gap-1">
+                            <span className="flex items-center gap-1.5 bg-black/20 dark:bg-white/5 px-2 py-1 rounded-lg">
                               <Clock className="h-3 w-3" />
                               {appointment.startTime} - {appointment.endTime}
                             </span>
                           </div>
                         </div>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/60 hover:text-foreground rounded-xl self-end sm:self-center">
                           <ArrowRight className="h-4 w-4" />
                         </Button>
                       </div>
@@ -157,16 +157,17 @@ export default function TeamAppointmentsPage() {
       </Card>
 
       <Dialog open={!!selectedAppointment} onOpenChange={(open) => !open && setSelectedAppointment(null)}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{selectedAppointment?.title}</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-hidden flex flex-col p-0 border-white/10 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl">
+          <DialogHeader className="p-6 pb-0">
+            <DialogTitle className="text-xl font-black tracking-tight">{selectedAppointment?.title}</DialogTitle>
+            <DialogDescription className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">
               Appointment details
             </DialogDescription>
           </DialogHeader>
-          
-          {selectedAppointment && (
-            <div className="space-y-4">
+
+          <ScrollArea className="flex-1 p-6">
+            {selectedAppointment && (
+              <div className="space-y-4">
               <div className="rounded-lg border p-4 space-y-3">
                 <div className="flex items-center gap-3">
                   <User className="h-4 w-4 text-muted-foreground" />
@@ -207,6 +208,12 @@ export default function TeamAppointmentsPage() {
               </div>
             </div>
           )}
+          </ScrollArea>
+          <div className="p-6 pt-0 border-white/10">
+            <Button variant="outline" className="w-full rounded-xl border-white/10 font-bold uppercase tracking-widest text-[10px] h-10" onClick={() => setSelectedAppointment(null)}>
+              Close
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

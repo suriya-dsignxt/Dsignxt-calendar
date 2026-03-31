@@ -416,99 +416,127 @@ export default function BookingPage() {
 
       {/* Booking Form Dialog */}
       <Dialog open={showBookingForm} onOpenChange={setShowBookingForm}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Complete Your Booking</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-hidden flex flex-col p-0 border-white/10 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl">
+          <DialogHeader className="p-6 pb-0">
+            <DialogTitle className="text-xl font-black tracking-tight">Complete Your Booking</DialogTitle>
+            <DialogDescription className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">
               {selectedDate && selectedSlots.length > 0 && (
-                <span className="flex items-center gap-2 mt-2">
-                  <Calendar className="h-4 w-4" />
-                  {format(selectedDate, "EEEE, MMMM d, yyyy")}
-                  <Clock className="h-4 w-4 ml-2" />
-                  {selectedSlots[0].time} - {selectedSlots[selectedSlots.length - 1].endTime}
+                <span className="flex flex-wrap items-center gap-2 mt-2">
+                  <span className="flex items-center gap-1.5 bg-black/5 dark:bg-white/5 px-2 py-1 rounded-lg">
+                    <Calendar className="h-3 w-3" />
+                    {format(selectedDate, "MMM d, yyyy")}
+                  </span>
+                  <span className="flex items-center gap-1.5 bg-black/5 dark:bg-white/5 px-2 py-1 rounded-lg">
+                    <Clock className="h-3 w-3" />
+                    {selectedSlots[0].time} - {selectedSlots[selectedSlots.length - 1].endTime}
+                  </span>
                 </span>
               )}
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name" className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                Full Name *
-              </Label>
-              <Input
-                id="name"
-                value={formData.clientName}
-                onChange={(e) => setFormData({ ...formData, clientName: e.target.value })}
-                placeholder="John Doe"
-                required
-              />
-            </div>
+          <ScrollArea className="flex-1 p-6">
+            <form id="booking-form" onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 ml-1">
+                  Full Name *
+                </Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
+                  <Input
+                    id="name"
+                    value={formData.clientName}
+                    onChange={(e) => setFormData({ ...formData, clientName: e.target.value })}
+                    placeholder="John Doe"
+                    className="pl-10 h-11 rounded-xl border-white/10 bg-white/5"
+                    required
+                  />
+                </div>
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email" className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                Email Address *
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.clientEmail}
-                onChange={(e) => setFormData({ ...formData, clientEmail: e.target.value })}
-                placeholder="john@example.com"
-                required
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 ml-1">
+                  Email Address *
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.clientEmail}
+                    onChange={(e) => setFormData({ ...formData, clientEmail: e.target.value })}
+                    placeholder="john@example.com"
+                    className="pl-10 h-11 rounded-xl border-white/10 bg-white/5"
+                    required
+                  />
+                </div>
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="phone" className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                Phone Number
-              </Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={formData.clientPhone}
-                onChange={(e) => setFormData({ ...formData, clientPhone: e.target.value })}
-                placeholder="+1 (555) 123-4567"
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 ml-1">
+                  Phone Number
+                </Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={formData.clientPhone}
+                    onChange={(e) => setFormData({ ...formData, clientPhone: e.target.value })}
+                    placeholder="+1 (555) 123-4567"
+                    className="pl-10 h-11 rounded-xl border-white/10 bg-white/5"
+                  />
+                </div>
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="title" className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Meeting Title *
-              </Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="Project Discussion"
-                required
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="title" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 ml-1">
+                  Meeting Title *
+                </Label>
+                <div className="relative">
+                  <FileText className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
+                  <Input
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    placeholder="Project Discussion"
+                    className="pl-10 h-11 rounded-xl border-white/10 bg-white/5"
+                    required
+                  />
+                </div>
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="description">Additional Details</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Please share any details about what you would like to discuss..."
-                rows={3}
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 ml-1">
+                  Additional Details
+                </Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Please share any details about what you would like to discuss..."
+                  className="rounded-xl border-white/10 bg-white/5 min-h-[100px] resize-none"
+                />
+              </div>
+            </form>
+          </ScrollArea>
 
-            <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter className="p-6 pt-4 border-t border-white/10 bg-muted/20">
+            <div className="flex flex-col-reverse sm:flex-row gap-2 w-full">
               <Button
                 type="button"
                 variant="outline"
+                className="flex-1 h-11 text-[11px] font-bold uppercase tracking-[0.2em] rounded-xl border-white/10"
                 onClick={() => setShowBookingForm(false)}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading}>
+              <Button 
+                form="booking-form"
+                type="submit" 
+                disabled={loading}
+                className="flex-[2] h-11 text-[11px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground shadow-lg shadow-primary/20 rounded-xl"
+              >
                 {loading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -518,8 +546,8 @@ export default function BookingPage() {
                   "Confirm Booking"
                 )}
               </Button>
-            </DialogFooter>
-          </form>
+            </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

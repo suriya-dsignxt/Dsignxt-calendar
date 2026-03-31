@@ -125,12 +125,12 @@ export default function TeamManagementPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Team Management</h2>
-          <p className="text-muted-foreground">Manage your team members and their permissions</p>
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Team Management</h2>
+          <p className="text-sm text-muted-foreground">Manage your team members and their permissions</p>
         </div>
-        <Button onClick={() => setIsInviteOpen(!isInviteOpen)}>
+        <Button onClick={() => setIsInviteOpen(!isInviteOpen)} className="w-full sm:w-auto">
           <UserPlus className="mr-2 h-4 w-4" />
           {isInviteOpen ? "Cancel" : "Invite Member"}
         </Button>
@@ -266,9 +266,9 @@ export default function TeamManagementPage() {
                     : member.role === 'team'
 
                   return (
-                    <div key={member._id} className="flex items-center justify-between py-4 group">
+                    <div key={member._id} className="flex flex-col sm:flex-row sm:items-center justify-between py-4 gap-4 group border-b last:border-0 border-white/5">
                       <div className="flex items-center gap-4">
-                        <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold relative
+                        <div className={`h-10 w-10 shrink-0 rounded-full flex items-center justify-center font-bold relative
                           ${member.role === 'super_admin' ? 'bg-orange-500/10 text-orange-600' : 
                             member.role === 'admin' ? 'bg-blue-500/10 text-blue-600' : 'bg-primary/10 text-primary'}`}>
                           {member.name.charAt(0)}
@@ -276,56 +276,58 @@ export default function TeamManagementPage() {
                             <Shield className="h-3 w-3 absolute -bottom-1 -right-1 text-orange-600" />
                           )}
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <div className="flex items-center gap-2">
-                            <p className="font-medium">{member.name}</p>
+                            <p className="font-medium truncate">{member.name}</p>
                             {member.email === currentUser?.email && (
                               <Badge variant="outline" className="text-[10px] h-4 px-1 leading-none uppercase tracking-widest text-muted-foreground/60">You</Badge>
                             )}
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Mail className="h-3 w-3" />
-                            {member.email}
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground truncate">
+                            <Mail className="h-3 w-3 shrink-0" />
+                            <span className="truncate">{member.email}</span>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        {(isSuperAdmin || (isAdmin && member.role === 'team')) && member.role !== 'super_admin' ? (
-                          <Select
-                            disabled={member.email === currentUser?.email}
-                            value={member.role}
-                            onValueChange={(value) => handleRoleChange(member._id, value)}
-                          >
-                            <SelectTrigger className={`h-7 text-[11px] font-semibold w-[110px] bg-transparent capitalize ${
+                      <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 pl-14 sm:pl-0">
+                        <div className="flex items-center gap-2">
+                          {(isSuperAdmin || (isAdmin && member.role === 'team')) && member.role !== 'super_admin' ? (
+                            <Select
+                              disabled={member.email === currentUser?.email}
+                              value={member.role}
+                              onValueChange={(value) => handleRoleChange(member._id, value)}
+                            >
+                              <SelectTrigger className={`h-8 text-[11px] font-semibold w-[110px] bg-transparent capitalize ${
+                                member.role === 'admin' ? 'border-blue-500/20 text-blue-600' : ''
+                              }`}>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="team">Team member</SelectItem>
+                                {isSuperAdmin && (
+                                  <SelectItem value="admin">System Admin</SelectItem>
+                                )}
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <Badge variant="outline" className={`capitalize h-7 ${
+                              member.role === 'super_admin' ? 'border-orange-500/20 text-orange-600' : 
                               member.role === 'admin' ? 'border-blue-500/20 text-blue-600' : ''
                             }`}>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="team">Team member</SelectItem>
-                              {isSuperAdmin && (
-                                <SelectItem value="admin">System Admin</SelectItem>
-                              )}
-                            </SelectContent>
-                          </Select>
-                        ) : (
-                          <Badge variant="outline" className={`capitalize ${
-                            member.role === 'super_admin' ? 'border-orange-500/20 text-orange-600' : 
-                            member.role === 'admin' ? 'border-blue-500/20 text-blue-600' : ''
-                          }`}>
-                            {member.role.replace('_', ' ')}
-                          </Badge>
-                        )}
-                        {member.isActive ? (
-                          <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">Active</Badge>
-                        ) : (
-                          <Badge variant="secondary">Inactive</Badge>
-                        )}
+                              {member.role.replace('_', ' ')}
+                            </Badge>
+                          )}
+                          {member.isActive ? (
+                            <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 h-7">Active</Badge>
+                          ) : (
+                            <Badge variant="secondary" className="h-7 text-[10px]">Inactive</Badge>
+                          )}
+                        </div>
                         {canDelete && (
                           <Button 
                             variant="ghost" 
                             size="icon" 
-                            className="text-red-500 hover:text-red-600 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                            className="text-red-500 hover:text-red-600 hover:bg-red-50 h-8 w-8 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                             onClick={() => handleDelete(member._id, member.role)}
                           >
                             <Trash2 className="h-4 w-4" />

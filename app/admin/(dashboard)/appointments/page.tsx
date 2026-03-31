@@ -205,12 +205,12 @@ export default function AppointmentsPage() {
           </div>
 
           <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-            <TabsList>
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="pending">Pending</TabsTrigger>
-              <TabsTrigger value="approved">Approved</TabsTrigger>
-              <TabsTrigger value="rejected">Rejected</TabsTrigger>
-              <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
+            <TabsList className="w-full justify-start overflow-x-auto h-11 bg-muted/30 p-1 rounded-xl">
+              <TabsTrigger value="all" className="text-[10px] font-bold uppercase tracking-widest px-4 py-2">All</TabsTrigger>
+              <TabsTrigger value="pending" className="text-[10px] font-bold uppercase tracking-widest px-4 py-2">Pending</TabsTrigger>
+              <TabsTrigger value="approved" className="text-[10px] font-bold uppercase tracking-widest px-4 py-2">Approved</TabsTrigger>
+              <TabsTrigger value="rejected" className="text-[10px] font-bold uppercase tracking-widest px-4 py-2">Rejected</TabsTrigger>
+              <TabsTrigger value="cancelled" className="text-[10px] font-bold uppercase tracking-widest px-4 py-2">Cancelled</TabsTrigger>
             </TabsList>
 
             <TabsContent value={selectedTab} className="mt-4">
@@ -227,61 +227,61 @@ export default function AppointmentsPage() {
                     {filteredAppointments.map((appointment) => (
                       <div
                         key={appointment._id}
-                        className="flex items-center justify-between rounded-lg border p-4 hover:bg-muted/50 transition-colors cursor-pointer"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between rounded-2xl border border-white/5 p-4 hover:bg-white/5 transition-all cursor-pointer gap-4 group"
                         onClick={() => setSelectedAppointment(appointment)}
                       >
-                        <div className="flex-1 space-y-1">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium">{appointment.title}</p>
+                        <div className="flex-1 space-y-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="font-bold text-sm tracking-tight">{appointment.title}</p>
                             {getStatusBadge(appointment.status)}
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {appointment.clientName} ({appointment.clientEmail})
+                          <p className="text-xs font-medium text-muted-foreground/80 truncate max-w-[280px] sm:max-w-md">
+                            {appointment.clientName} <span className="opacity-50 mx-1">|</span> {appointment.clientEmail}
                           </p>
-                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1">
+                          <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                            <span className="flex items-center gap-1.5 bg-black/20 dark:bg-white/5 px-2 py-1 rounded-lg">
                               <Calendar className="h-3 w-3" />
                               {format(new Date(appointment.date), "MMM d, yyyy")}
                             </span>
-                            <span className="flex items-center gap-1">
+                            <span className="flex items-center gap-1.5 bg-black/20 dark:bg-white/5 px-2 py-1 rounded-lg">
                               <Clock className="h-3 w-3" />
                               {appointment.startTime} - {appointment.endTime}
                             </span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-between sm:justify-end gap-2 pt-3 sm:pt-0 border-t sm:border-0 border-white/5">
                           {appointment.status === "pending" && (
-                            <>
+                            <div className="flex items-center gap-2 flex-1 sm:flex-none">
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                                className="flex-1 sm:flex-none h-8 text-[10px] font-bold uppercase tracking-widest text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/10 rounded-xl"
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   setSelectedAppointment(appointment)
                                 }}
                               >
-                                <CheckCircle2 className="h-4 w-4 mr-1" />
+                                <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" />
                                 Approve
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                className="flex-1 sm:flex-none h-8 text-[10px] font-bold uppercase tracking-widest text-red-600 border-red-500/20 hover:bg-red-500/10 rounded-xl"
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   setSelectedAppointment(appointment)
                                 }}
                               >
-                                <XCircle className="h-4 w-4 mr-1" />
+                                <XCircle className="h-3.5 w-3.5 mr-1.5" />
                                 Reject
                               </Button>
-                            </>
+                            </div>
                           )}
                           <Button
-                            size="sm"
+                            size="icon"
                             variant="ghost"
-                            className="text-muted-foreground hover:text-destructive"
+                            className="h-8 w-8 text-muted-foreground/60 hover:text-red-500 hover:bg-red-500/5 rounded-xl ml-auto"
                             onClick={(e) => {
                               e.stopPropagation()
                               handleDelete(appointment._id)
@@ -308,16 +308,17 @@ export default function AppointmentsPage() {
           setAssignedTo([])
         }
       }}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{selectedAppointment?.title}</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-hidden flex flex-col p-0 border-white/10 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl">
+          <DialogHeader className="p-6 pb-0">
+            <DialogTitle className="text-xl font-black tracking-tight">{selectedAppointment?.title}</DialogTitle>
+            <DialogDescription className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">
               Review appointment details and take action
             </DialogDescription>
           </DialogHeader>
-          
-          {selectedAppointment && (
-            <div className="space-y-4">
+
+          <ScrollArea className="flex-1 p-6">
+            {selectedAppointment && (
+              <div className="space-y-4">
               <div className="rounded-lg border p-4 space-y-3">
                 <div className="flex items-center gap-3">
                   <User className="h-4 w-4 text-muted-foreground" />
@@ -447,14 +448,16 @@ export default function AppointmentsPage() {
             </div>
           )}
 
-          <DialogFooter>
+          </ScrollArea>
+
+          <DialogFooter className="p-6 pt-4 border-t border-white/10 bg-muted/20">
             {selectedAppointment?.status === "pending" && (
-              <>
+              <div className="flex gap-2 w-full">
                 <Button
                   variant="outline"
                   onClick={handleReject}
                   disabled={loading}
-                  className="text-red-600 hover:text-red-700"
+                  className="flex-1 h-10 text-[11px] font-bold uppercase tracking-widest text-red-600 border-red-500/20 hover:bg-red-500/10 rounded-xl"
                 >
                   <XCircle className="h-4 w-4 mr-2" />
                   Reject
@@ -462,25 +465,25 @@ export default function AppointmentsPage() {
                 <Button
                   onClick={handleApprove}
                   disabled={loading}
-                  className="bg-emerald-600 hover:bg-emerald-700"
+                  className="flex-1 h-10 text-[11px] font-bold uppercase tracking-widest bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 rounded-xl"
                 >
                   <CheckCircle2 className="h-4 w-4 mr-2" />
                   Approve
                 </Button>
-              </>
+              </div>
             )}
             {selectedAppointment?.status === "approved" && (
               <Button
                 onClick={handleApprove}
                 disabled={loading}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="w-full h-11 text-xs font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground shadow-lg shadow-primary/20 rounded-xl"
               >
                 <CheckCircle2 className="h-4 w-4 mr-2" />
                 Save Changes
               </Button>
             )}
             {selectedAppointment?.status !== "pending" && selectedAppointment?.status !== "approved" && (
-              <Button variant="outline" onClick={() => setSelectedAppointment(null)}>
+              <Button variant="outline" onClick={() => setSelectedAppointment(null)} className="w-full h-11 text-xs font-black uppercase tracking-[0.2em] rounded-xl border-white/10">
                 Close
               </Button>
             )}

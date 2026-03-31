@@ -1,5 +1,4 @@
-"use client"
-
+import { useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
@@ -43,6 +42,7 @@ const teamNavigation = [
 ]
 
 export function AdminHeader({ title, description }: AdminHeaderProps) {
+  const [open, setOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
   const isTeam = pathname.startsWith('/team')
@@ -57,7 +57,7 @@ export function AdminHeader({ title, description }: AdminHeaderProps) {
   return (
     <header className="sticky top-0 z-40 border-b border-white/20 dark:border-white/5 backdrop-blur-xl bg-white/70 dark:bg-zinc-950/70 px-4 md:px-6 py-4 md:py-5 flex items-center justify-between shadow-sm transition-all duration-500">
       <div className="flex items-center gap-4 truncate mr-2">
-        <Sheet>
+        <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="lg:hidden shrink-0">
               <Menu className="h-5 w-5" />
@@ -86,6 +86,7 @@ export function AdminHeader({ title, description }: AdminHeaderProps) {
                   <Link
                     key={item.name}
                     href={item.href}
+                    onClick={() => setOpen(false)}
                     className={cn(
                       "flex items-center gap-3 rounded-xl px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all",
                       isActive

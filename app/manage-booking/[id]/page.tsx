@@ -345,8 +345,8 @@ export default function GuestManageBookingPage() {
                   <p className="text-muted-foreground text-sm md:text-base px-1">Modify your current booking to a time that fits your schedule better.</p>
                </div>
                
-               <div className="grid gap-8 grid-cols-1 md:grid-cols-5">
-                  <Card className="md:col-span-3 border-white/20 dark:border-zinc-800 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md shadow-xl rounded-2xl overflow-hidden self-start transition-all hover:shadow-2xl">
+               <div className="flex flex-col sm:flex-row md:grid md:grid-cols-5 gap-4 md:gap-8">
+                  <Card className="sm:flex-1 md:col-span-3 border-white/20 dark:border-zinc-800 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md shadow-xl rounded-2xl overflow-hidden self-start transition-all hover:shadow-2xl">
                     <CardHeader className="pb-3 border-b border-white/10">
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-base font-bold">Pick a Date</CardTitle>
@@ -394,7 +394,7 @@ export default function GuestManageBookingPage() {
                     </CardContent>
                   </Card>
 
-                  <Card className="md:col-span-2 border-white/20 dark:border-zinc-800 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md shadow-xl rounded-2xl overflow-hidden self-start transition-all hover:shadow-2xl">
+                  <Card className="sm:flex-1 md:col-span-2 border-white/20 dark:border-zinc-800 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md shadow-xl rounded-2xl overflow-hidden self-start transition-all hover:shadow-2xl">
                     <CardHeader className="pb-3 border-b border-white/10">
                       <CardTitle className="text-base font-bold">Available Slots</CardTitle>
                     </CardHeader>
@@ -460,26 +460,27 @@ export default function GuestManageBookingPage() {
       </main>
 
       <Dialog open={showRescheduleConfirm} onOpenChange={setShowRescheduleConfirm}>
-        <DialogContent className="max-w-md p-0 overflow-hidden border-none rounded-3xl shadow-3xl bg-background/95 backdrop-blur-2xl">
-          <div className="p-8 space-y-6">
-            <DialogHeader className="space-y-2">
-              <div className="h-12 w-12 bg-amber-500 rounded-2xl flex items-center justify-center text-white mb-2 shadow-lg shadow-amber-500/20 rotate-3">
-                <Clock className="h-7 w-7" />
-              </div>
-              <DialogTitle className="text-2xl font-black tracking-tight">Final Confirmation</DialogTitle>
-              <DialogDescription className="text-base font-medium">
-                Please verify your new requested session window below before submitting.
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="bg-zinc-100 dark:bg-zinc-900 p-6 rounded-3xl border border-white/10 space-y-4">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-hidden flex flex-col p-0 border-none rounded-3xl shadow-3xl bg-background/95 backdrop-blur-2xl">
+          <ScrollArea className="flex-1">
+            <div className="p-6 md:p-8 space-y-6">
+              <DialogHeader className="space-y-2">
+                <div className="h-12 w-12 bg-amber-500 rounded-2xl flex items-center justify-center text-white mb-2 shadow-lg shadow-amber-500/20 rotate-3">
+                  <Clock className="h-7 w-7" />
+                </div>
+                <DialogTitle className="text-xl md:text-2xl font-black tracking-tight">Final Confirmation</DialogTitle>
+                <DialogDescription className="text-sm md:text-base font-medium">
+                  Please verify your new requested session window below before submitting.
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="bg-zinc-100 dark:bg-zinc-900 p-4 md:p-6 rounded-3xl border border-white/10 space-y-4">
                <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-full bg-amber-500/10 flex items-center justify-center">
                     <Calendar className="h-4 w-4 text-amber-600" />
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[10px] font-black uppercase text-muted-foreground leading-none mb-1">New Date</span>
-                    <span className="text-base font-bold">{selectedDate && format(selectedDate, "EEEE, MMMM d, yyyy")}</span>
+                    <span className="text-base font-bold">{selectedDate ? format(selectedDate, "EEEE, MMMM d, yyyy") : ""}</span>
                   </div>
                </div>
                
@@ -494,19 +495,20 @@ export default function GuestManageBookingPage() {
                </div>
             </div>
 
-            <div className="flex flex-col gap-3 w-full pt-2">
-              <Button onClick={handleReschedule} disabled={loading} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02] active:scale-95">
-                 {loading ? <Loader2 className="h-5 w-5 animate-spin mr-3" /> : "Confirm & Send Request"}
-              </Button>
-              <Button variant="ghost" onClick={() => setShowRescheduleConfirm(false)} className="w-full h-12 text-sm font-bold text-muted-foreground/60 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-all">
-                Cancel, rethink timing
-              </Button>
+                <div className="flex flex-col gap-3 w-full pt-2">
+                  <Button onClick={handleReschedule} disabled={loading} className="w-full h-12 md:h-14 text-base md:text-lg font-black rounded-2xl shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02] active:scale-95">
+                     {loading ? <Loader2 className="h-5 w-5 animate-spin mr-3" /> : "Confirm & Send Request"}
+                  </Button>
+                  <Button variant="ghost" onClick={() => setShowRescheduleConfirm(false)} className="w-full h-11 text-xs md:text-sm font-bold text-muted-foreground/60 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-all">
+                    Cancel, rethink timing
+                  </Button>
+                </div>
+              </div>
+            </ScrollArea>
+            
+            <div className="bg-amber-500/10 p-4 border-t border-amber-500/10 text-center">
+               <p className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest leading-tight">Administrator review required after submission</p>
             </div>
-          </div>
-          
-          <div className="bg-amber-500/10 p-4 border-t border-amber-500/10 text-center">
-             <p className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest">Administrator review required after submission</p>
-          </div>
         </DialogContent>
       </Dialog>
     </div>

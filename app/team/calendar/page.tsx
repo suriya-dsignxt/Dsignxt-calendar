@@ -126,10 +126,11 @@ export default function TeamCalendarPage() {
   }
 
   const renderMonthView = () => (
-    <div className="grid grid-cols-7 gap-px bg-border rounded-lg overflow-hidden">
+    <div className="grid grid-cols-7 gap-px bg-border rounded-lg overflow-hidden border">
       {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-        <div key={day} className="bg-muted p-2 text-center text-sm font-medium">
-          {day}
+        <div key={day} className="bg-muted p-1 sm:p-2 text-center text-[10px] sm:text-sm font-bold uppercase tracking-tight sm:tracking-normal">
+          <span className="hidden sm:inline">{day}</span>
+          <span className="inline sm:hidden">{day.charAt(0)}</span>
         </div>
       ))}
       {days.map((day) => {
@@ -303,18 +304,20 @@ export default function TeamCalendarPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={() => navigate("prev")}>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="icon" onClick={() => navigate("next")}>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" onClick={goToToday}>
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1">
+            <Button variant="outline" size="icon" onClick={() => navigate("prev")} className="h-8 w-8 sm:h-9 sm:w-9">
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" onClick={() => navigate("next")} className="h-8 w-8 sm:h-9 sm:w-9">
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+          <Button variant="outline" onClick={goToToday} size="sm" className="h-8 sm:h-9">
             Today
           </Button>
-          <h2 className="text-xl font-semibold ml-4">
+          <h2 className="text-sm sm:text-lg font-black tracking-tight ml-2">
             {viewMode === "day"
               ? format(currentDate, "EEEE, MMMM d, yyyy")
               : viewMode === "week"
@@ -323,32 +326,35 @@ export default function TeamCalendarPage() {
           </h2>
         </div>
         
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 text-sm mr-4">
-            <div className="flex items-center gap-1">
-              <div className="h-3 w-3 rounded bg-amber-500" />
-              <span className="text-muted-foreground">Pending</span>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 overflow-x-auto pb-1 sm:pb-0">
+            <div className="flex items-center gap-1.5 shrink-0">
+              <div className="h-2 w-2 rounded-full bg-amber-500 shadow-sm shadow-amber-500/20" />
+              <span>Pending</span>
             </div>
-            <div className="flex items-center gap-1">
-              <div className="h-3 w-3 rounded bg-emerald-500" />
-              <span className="text-muted-foreground">Approved</span>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/20" />
+              <span>Approved</span>
             </div>
-            <div className="flex items-center gap-1">
-              <div className="h-3 w-3 rounded bg-orange-500" />
-              <span className="text-muted-foreground">Cancelled/Rescheduled</span>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <div className="h-2 w-2 rounded-full bg-orange-500 shadow-sm shadow-orange-500/20" />
+              <span>Other</span>
             </div>
           </div>
           
-          <div className="flex border rounded-lg">
+          <div className="flex border rounded-xl overflow-hidden bg-muted/30 p-0.5 shrink-0">
             {(["month", "week", "day"] as ViewMode[]).map((mode) => (
               <Button
                 key={mode}
                 variant={viewMode === mode ? "default" : "ghost"}
                 size="sm"
-                className="rounded-none first:rounded-l-lg last:rounded-r-lg"
+                className={cn(
+                  "h-7 sm:h-8 text-[10px] font-bold uppercase tracking-widest rounded-lg px-3 sm:px-4",
+                  viewMode === mode ? "shadow-sm" : "hover:bg-transparent"
+                )}
                 onClick={() => setViewMode(mode)}
               >
-                {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                {mode}
               </Button>
             ))}
           </div>
