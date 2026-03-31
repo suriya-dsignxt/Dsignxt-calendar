@@ -89,8 +89,10 @@ function DraggableTaskItem({
     <div 
       ref={setNodeRef}
       style={style}
+      {...attributes}
+      {...listeners}
       className={cn(
-        "group relative flex items-start gap-4 p-4 rounded-2xl border border-white/10 bg-white/50 dark:bg-zinc-900/50 transition-all hover:shadow-lg hover:border-white/30",
+        "group relative flex items-start gap-4 p-4 rounded-2xl border border-white/10 bg-white/50 dark:bg-zinc-900/50 transition-all hover:shadow-lg hover:border-white/30 cursor-grab active:cursor-grabbing",
         isDragging && "ring-2 ring-primary/50 shadow-2xl scale-105",
         isSelected && "border-primary/40 bg-primary/5"
       )}
@@ -99,6 +101,7 @@ function DraggableTaskItem({
         <Checkbox 
           checked={isSelected} 
           onCheckedChange={() => onSelect(task._id)}
+          onPointerDown={(e) => e.stopPropagation()}
           className="rounded-md border-white/20 data-[state=checked]:bg-primary data-[state=checked]:border-none"
         />
         <button 
@@ -137,7 +140,7 @@ function DraggableTaskItem({
            <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); onDelete(task._id); }} className="h-7 w-7 p-0 text-red-500 hover:bg-red-500/10 rounded-lg">
               <Trash2 className="h-3 w-3" />
            </Button>
-           <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing ml-auto p-1 opacity-40 hover:opacity-100">
+           <div className="ml-auto p-1 opacity-20 group-hover:opacity-60">
              <MoreVertical className="h-4 w-4" />
            </div>
         </div>
