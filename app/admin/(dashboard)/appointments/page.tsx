@@ -316,7 +316,7 @@ export default function AppointmentsPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <ScrollArea className="flex-1 p-6">
+          <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-white/10">
             {selectedAppointment && (
               <div className="space-y-4">
               <div className="rounded-lg border p-4 space-y-3">
@@ -389,7 +389,7 @@ export default function AppointmentsPage() {
                   
                   <div className="space-y-3">
                     <Label className="text-sm font-medium">Assign to Team Members</Label>
-                    <ScrollArea className="h-[120px] rounded-md border border-white/10 bg-white/5 p-2">
+                    <ScrollArea className="h-[180px] rounded-md border border-white/10 bg-white/5 p-2">
                       <div className="grid grid-cols-1 gap-2">
                         {teamMembers.map((member) => (
                           <div key={member._id} className="flex items-center space-x-2 rounded-md p-1 hover:bg-white/5 transition-colors">
@@ -448,7 +448,7 @@ export default function AppointmentsPage() {
             </div>
           )}
 
-          </ScrollArea>
+          </div>
           
           <DialogFooter className="p-6 pt-4 border-t border-white/10 bg-muted/20 shrink-0">
             {selectedAppointment?.status === "pending" && (
