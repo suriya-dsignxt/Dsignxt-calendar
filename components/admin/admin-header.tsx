@@ -1,9 +1,8 @@
 "use client"
 
-import { useState } from "react"
-import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
+import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
-import { useClerk, useUser } from "@clerk/nextjs"
 import { cn } from "@/lib/utils"
 import { 
   Menu, 
@@ -53,13 +52,22 @@ const teamNavigation = [
 export function AdminHeader({ title, description }: AdminHeaderProps) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
-  const { signOut } = useClerk()
-  const { user } = useUser()
+  const router = useRouter()
+  const [session, setSession] = useState<{ name?: string; email?: string } | null>(null)
   const isTeam = pathname.startsWith('/team')
   const navigation = isTeam ? teamNavigation : adminNavigation
 
+  useEffect(() => {
+    fetch("/api/auth/session")
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => setSession(data))
+      .catch(() => setSession(null))
+  }, [])
+
   const handleLogout = async () => {
-    await signOut({ redirectUrl: "/admin/login" })
+    await fetch("/api/auth/logout", { method: "POST" })
+    router.push("/admin/login")
+    router.refresh()
   }
 
   return (
@@ -131,10 +139,10 @@ export function AdminHeader({ title, description }: AdminHeaderProps) {
       <div className="flex items-center gap-4 shrink-0">
         <div className="hidden text-right md:block">
           <p className="max-w-[220px] truncate text-sm font-semibold">
-            {user?.fullName || user?.username || "Workspace User"}
+            {session?.name || "Workspace User"}
           </p>
           <p className="max-w-[220px] truncate text-[11px] uppercase tracking-widest text-muted-foreground/60">
-            {user?.primaryEmailAddress?.emailAddress || "Clerk Session"}
+            {session?.email || "Local Session"}
           </p>
         </div>
         <NotificationBell />

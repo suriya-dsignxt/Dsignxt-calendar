@@ -1,8 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useClerk, useUser } from "@clerk/nextjs"
+import { useEffect, useState } from "react"
+import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -29,11 +29,20 @@ const navigation = [
 
 export function TeamSidebar() {
   const pathname = usePathname()
-  const { signOut } = useClerk()
-  const { user } = useUser()
+  const router = useRouter()
+  const [session, setSession] = useState<{ name?: string; email?: string } | null>(null)
+
+  useEffect(() => {
+    fetch("/api/auth/session")
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => setSession(data))
+      .catch(() => setSession(null))
+  }, [])
 
   const handleLogout = async () => {
-    await signOut({ redirectUrl: "/admin/login" })
+    await fetch("/api/auth/logout", { method: "POST" })
+    router.push("/admin/login")
+    router.refresh()
   }
 
   return (
@@ -78,9 +87,9 @@ export function TeamSidebar() {
       
       <div className="p-4 border-t border-white/10 dark:border-white/5 relative z-10">
         <div className="mb-4 rounded-2xl border border-white/10 bg-black/5 p-3 dark:bg-white/5">
-          <p className="truncate text-sm font-semibold">{user?.fullName || user?.username || "Workspace User"}</p>
+          <p className="truncate text-sm font-semibold">{session?.name || "Workspace User"}</p>
           <p className="truncate text-xs text-muted-foreground">
-            {user?.primaryEmailAddress?.emailAddress || "Signed in with Clerk"}
+            {session?.email || "Signed in locally"}
           </p>
         </div>
         <Button

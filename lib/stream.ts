@@ -22,12 +22,15 @@ export function getStreamServerClient() {
 }
 
 function toStreamUser(session: Pick<AppSession, 'id' | 'name' | 'email' | 'role'>) {
+  const displayName = session.name || session.email
+  const streamRole = session.role === 'super_admin' || session.role === 'admin' ? 'admin' : 'user'
+
   return {
     id: session.id,
-    name: session.name,
+    name: displayName,
     email: session.email,
-    role: session.role,
-    image: `https://ui-avatars.com/api/?name=${encodeURIComponent(session.name)}&background=0f172a&color=ffffff`,
+    role: streamRole,
+    image: `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0f172a&color=ffffff`,
   }
 }
 
@@ -45,7 +48,7 @@ export async function ensureAllTeamChannel(currentSession: Pick<AppSession, 'id'
     id: user._id.toString(),
     name: user.name,
     email: user.email,
-    role: user.role,
+    role: user.role === 'super_admin' || user.role === 'admin' ? 'admin' : 'user',
     image: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0f172a&color=ffffff`,
   }))
 

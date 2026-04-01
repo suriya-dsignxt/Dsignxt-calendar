@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { ClerkProvider } from '@clerk/nextjs'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from 'sonner'
 import { ConfirmProvider } from '@/providers/confirm-provider'
@@ -36,12 +35,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans antialiased">
-        <ClerkProvider>
-          <ConfirmProvider>
-            {children}
-            <Toaster richColors closeButton theme="dark" position="top-right" />
-          </ConfirmProvider>
-        </ClerkProvider>
+        <ConfirmProvider>
+          {children}
+          <Toaster richColors closeButton theme="dark" position="top-right" />
+        </ConfirmProvider>
         <Analytics />
       </body>
     </html>

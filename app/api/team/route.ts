@@ -1,17 +1,7 @@
 import { NextResponse } from 'next/server'
-import { clerkClient } from '@clerk/nextjs/server'
 import { connectToDatabase } from '@/lib/mongodb'
 import { User } from '@/lib/models'
 import { getSession } from '@/lib/auth'
-
-function splitName(name: string) {
-  const [firstName, ...lastParts] = name.trim().split(/\s+/)
-
-  return {
-    firstName: firstName || undefined,
-    lastName: lastParts.join(' ') || undefined,
-  }
-}
 
 export async function GET() {
   try {
@@ -44,7 +34,6 @@ export async function POST(request: Request) {
 
     await connectToDatabase()
     const data = await request.json()
-    const client = await clerkClient()
     
     // Validate role assignment
     // Admin can ONLY create 'team' members
@@ -68,21 +57,10 @@ export async function POST(request: Request) {
       )
     }
 
-    const { firstName, lastName } = splitName(data.name)
-    const clerkUser = await client.users.createUser({
-      emailAddress: [data.email.toLowerCase()],
-      password: data.password,
-      firstName,
-      lastName,
-      publicMetadata: {
-        role: roleToAssign,
-      },
-    })
-
     const user = new User({
       name: data.name,
       email: data.email.toLowerCase(),
-      clerkId: clerkUser.id,
+      password: data.password,
       role: roleToAssign,
       isActive: true,
     })
@@ -118,7 +96,6 @@ export async function DELETE(request: Request) {
     }
 
     await connectToDatabase()
-    const client = await clerkClient()
     
     const userToDelete = await User.findById(id)
     if (!userToDelete) {
@@ -134,10 +111,6 @@ export async function DELETE(request: Request) {
 
     if (!canDelete) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
-    }
-
-    if (userToDelete.clerkId) {
-      await client.users.deleteUser(userToDelete.clerkId)
     }
 
     await User.findByIdAndDelete(id)
@@ -166,7 +139,6 @@ export async function PATCH(request: Request) {
     }
 
     await connectToDatabase()
-    const client = await clerkClient()
     
     const userToUpdate = await User.findById(id)
     if (!userToUpdate) {
@@ -198,22 +170,6 @@ export async function PATCH(request: Request) {
     }
 
     await userToUpdate.save()
-
-    if (userToUpdate.clerkId) {
-      await client.users.updateUserMetadata(userToUpdate.clerkId, {
-        publicMetadata: {
-          role: userToUpdate.role,
-        },
-      })
-
-      if (isActive === true) {
-        await client.users.unlockUser(userToUpdate.clerkId)
-      }
-
-      if (isActive === false) {
-        await client.users.lockUser(userToUpdate.clerkId)
-      }
-    }
     
     return NextResponse.json(userToUpdate)
   } catch (error) {
