@@ -124,12 +124,44 @@ const SettingsSchema = new Schema<ISettings>({
 
 // User Schema - for admin and team members
 export interface IUser extends Document {
+  clerkId?: string
   name: string
   email: string
   password?: string
   role: 'super_admin' | 'admin' | 'team'
   permissions: string[]
   isActive: boolean
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface INoteFolder extends Document {
+  name: string
+  color: string
+  icon: string
+  ownerId: mongoose.Types.ObjectId
+  isDefault: boolean
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface INoteChecklistItem {
+  id: string
+  text: string
+  checked: boolean
+}
+
+export interface INote extends Document {
+  ownerId: mongoose.Types.ObjectId
+  folderId: mongoose.Types.ObjectId
+  title: string
+  body: string
+  plainText: string
+  tags: string[]
+  checklist: INoteChecklistItem[]
+  pinned: boolean
+  favorite: boolean
+  color: string
   createdAt: Date
   updatedAt: Date
 }
@@ -156,6 +188,7 @@ const TaskSchema = new Schema<ITask>({
 }, { timestamps: true })
 
 const UserSchema = new Schema<IUser>({
+  clerkId: { type: String, unique: true, sparse: true },
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String },
@@ -163,6 +196,37 @@ const UserSchema = new Schema<IUser>({
   permissions: { type: [String], default: [] },
   isActive: { type: Boolean, default: true },
 }, { timestamps: true })
+
+const NoteFolderSchema = new Schema<INoteFolder>({
+  name: { type: String, required: true },
+  color: { type: String, default: '#f59e0b' },
+  icon: { type: String, default: 'Folder' },
+  ownerId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+  isDefault: { type: Boolean, default: false },
+}, { timestamps: true })
+
+const NoteChecklistItemSchema = new Schema<INoteChecklistItem>({
+  id: { type: String, required: true },
+  text: { type: String, required: true, default: '' },
+  checked: { type: Boolean, default: false },
+}, { _id: false })
+
+const NoteSchema = new Schema<INote>({
+  ownerId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+  folderId: { type: Schema.Types.ObjectId, ref: 'NoteFolder', required: true, index: true },
+  title: { type: String, default: 'Untitled Note' },
+  body: { type: String, default: '' },
+  plainText: { type: String, default: '' },
+  tags: { type: [String], default: [] },
+  checklist: { type: [NoteChecklistItemSchema], default: [] },
+  pinned: { type: Boolean, default: false },
+  favorite: { type: Boolean, default: false },
+  color: { type: String, default: '#f9fafb' },
+}, { timestamps: true })
+
+NoteFolderSchema.index({ ownerId: 1, name: 1 }, { unique: true })
+NoteSchema.index({ ownerId: 1, updatedAt: -1 })
+NoteSchema.index({ ownerId: 1, title: 'text', plainText: 'text', tags: 'text' })
 
 // Export models
 if (process.env.NODE_ENV === 'development') {
@@ -174,6 +238,8 @@ if (process.env.NODE_ENV === 'development') {
   delete mongoose.models.Notification
   delete mongoose.models.Settings
   delete mongoose.models.Task
+  delete mongoose.models.NoteFolder
+  delete mongoose.models.Note
 }
 
 export const User = mongoose.models.User || mongoose.model<IUser>('User', UserSchema)
@@ -183,3 +249,5 @@ export const Appointment = mongoose.models.Appointment || mongoose.model<IAppoin
 export const Notification = mongoose.models.Notification || mongoose.model<INotification>('Notification', NotificationSchema)
 export const Settings = mongoose.models.Settings || mongoose.model<ISettings>('Settings', SettingsSchema)
 export const Task = mongoose.models.Task || mongoose.model<ITask>('Task', TaskSchema)
+export const NoteFolder = mongoose.models.NoteFolder || mongoose.model<INoteFolder>('NoteFolder', NoteFolderSchema)
+export const Note = mongoose.models.Note || mongoose.model<INote>('Note', NoteSchema)

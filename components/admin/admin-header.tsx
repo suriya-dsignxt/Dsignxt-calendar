@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import Link from "next/link"
+import { useClerk, useUser } from "@clerk/nextjs"
 import { cn } from "@/lib/utils"
 import { 
   Menu, 
@@ -14,7 +15,9 @@ import {
   Users, 
   CheckCircle, 
   Settings,
-  LogOut 
+  LogOut,
+  MessagesSquare,
+  NotebookPen
 } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
@@ -33,6 +36,8 @@ const adminNavigation = [
   { name: "Blocked Dates", href: "/admin/blocked-dates", icon: CalendarOff },
   { name: "Team", href: "/admin/team", icon: Users },
   { name: "Tasks", href: "/admin/tasks", icon: CheckCircle },
+  { name: "Chat", href: "/admin/chat", icon: MessagesSquare },
+  { name: "Notes", href: "/admin/notes", icon: NotebookPen },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ]
 
@@ -41,19 +46,20 @@ const teamNavigation = [
   { name: "My Calendar", href: "/team/calendar", icon: CalendarDays },
   { name: "My Appointments", href: "/team/appointments", icon: Calendar },
   { name: "My Tasks", href: "/team/tasks", icon: CheckCircle },
+  { name: "My Chat", href: "/team/chat", icon: MessagesSquare },
+  { name: "My Notes", href: "/team/notes", icon: NotebookPen },
 ]
 
 export function AdminHeader({ title, description }: AdminHeaderProps) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
-  const router = useRouter()
+  const { signOut } = useClerk()
+  const { user } = useUser()
   const isTeam = pathname.startsWith('/team')
   const navigation = isTeam ? teamNavigation : adminNavigation
 
   const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" })
-    router.push("/admin/login")
-    router.refresh()
+    await signOut({ redirectUrl: "/admin/login" })
   }
 
   return (
@@ -123,6 +129,14 @@ export function AdminHeader({ title, description }: AdminHeaderProps) {
         </div>
       </div>
       <div className="flex items-center gap-4 shrink-0">
+        <div className="hidden text-right md:block">
+          <p className="max-w-[220px] truncate text-sm font-semibold">
+            {user?.fullName || user?.username || "Workspace User"}
+          </p>
+          <p className="max-w-[220px] truncate text-[11px] uppercase tracking-widest text-muted-foreground/60">
+            {user?.primaryEmailAddress?.emailAddress || "Clerk Session"}
+          </p>
+        </div>
         <NotificationBell />
       </div>
     </header>

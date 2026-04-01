@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
+import { useClerk, useUser } from "@clerk/nextjs"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -13,6 +14,8 @@ import {
   LayoutDashboard,
   Users,
   CheckCircle,
+  MessagesSquare,
+  NotebookPen,
 } from "lucide-react"
 
 const navigation = [
@@ -20,16 +23,17 @@ const navigation = [
   { name: "My Calendar", href: "/team/calendar", icon: CalendarDays },
   { name: "My Appointments", href: "/team/appointments", icon: Calendar },
   { name: "My Tasks", href: "/team/tasks", icon: CheckCircle },
+  { name: "My Chat", href: "/team/chat", icon: MessagesSquare },
+  { name: "My Notes", href: "/team/notes", icon: NotebookPen },
 ]
 
 export function TeamSidebar() {
   const pathname = usePathname()
-  const router = useRouter()
+  const { signOut } = useClerk()
+  const { user } = useUser()
 
   const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" })
-    router.push("/admin/login")
-    router.refresh()
+    await signOut({ redirectUrl: "/admin/login" })
   }
 
   return (
@@ -73,6 +77,12 @@ export function TeamSidebar() {
       </ScrollArea>
       
       <div className="p-4 border-t border-white/10 dark:border-white/5 relative z-10">
+        <div className="mb-4 rounded-2xl border border-white/10 bg-black/5 p-3 dark:bg-white/5">
+          <p className="truncate text-sm font-semibold">{user?.fullName || user?.username || "Workspace User"}</p>
+          <p className="truncate text-xs text-muted-foreground">
+            {user?.primaryEmailAddress?.emailAddress || "Signed in with Clerk"}
+          </p>
+        </div>
         <Button
           variant="ghost"
           className="w-full justify-start gap-3 text-xs font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-red-500 hover:bg-red-500/5 rounded-xl transition-all"

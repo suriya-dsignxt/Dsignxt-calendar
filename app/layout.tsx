@@ -1,12 +1,9 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { ClerkProvider } from '@clerk/nextjs'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from 'sonner'
 import { ConfirmProvider } from '@/providers/confirm-provider'
 import './globals.css'
-
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'Calendar Booking App',
@@ -39,10 +36,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans antialiased">
-        <ConfirmProvider>
-          {children}
-          <Toaster richColors closeButton theme="dark" position="top-right" />
-        </ConfirmProvider>
+        <ClerkProvider>
+          <ConfirmProvider>
+            {children}
+            <Toaster richColors closeButton theme="dark" position="top-right" />
+          </ConfirmProvider>
+        </ClerkProvider>
         <Analytics />
       </body>
     </html>

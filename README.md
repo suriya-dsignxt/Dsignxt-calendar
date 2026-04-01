@@ -24,6 +24,29 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## Authentication, Chat, and Notes Setup
+
+This app now uses:
+
+- Clerk for staff authentication at `/admin/login`
+- Stream Chat for whole-team chat, direct messages, and custom group rooms
+- MongoDB-backed notes with folders, pinning, favorites, tags, and checklists
+
+Before running locally, copy `.env.example` into `.env` and add:
+
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+- `CLERK_SECRET_KEY`
+- `NEXT_PUBLIC_CLERK_SIGN_IN_URL=/admin/login`
+- `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/admin`
+- `NEXT_PUBLIC_STREAM_CHAT_API_KEY`
+- `STREAM_CHAT_API_SECRET`
+
+Clerk role behavior:
+
+- The user matching `ADMIN_EMAIL` is automatically treated as `super_admin` on first sync.
+- Team management creates Clerk users and mirrors them into Mongo so existing task and appointment logic keeps working.
+- Role changes in the admin team screen update both Mongo and Clerk metadata.
+
 ## Learn More
 
 To learn more, take a look at the following resources:

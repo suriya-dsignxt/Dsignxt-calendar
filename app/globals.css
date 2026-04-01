@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import 'stream-chat-react/dist/css/v2/index.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -75,8 +76,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-sans: 'SF Pro Display', 'SF Pro Text', 'Segoe UI', sans-serif;
+  --font-mono: 'SFMono-Regular', 'SF Mono', 'Cascadia Mono', 'Menlo', monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -122,4 +123,28 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.str-chat {
+  --str-chat__primary-color: var(--primary);
+  --str-chat__surface-color: var(--card);
+  --str-chat__secondary-surface-color: var(--muted);
+  --str-chat__primary-surface-color: var(--background);
+  --str-chat__text-color: var(--foreground);
+  --str-chat__secondary-text-color: var(--muted-foreground);
+  --str-chat__border-radius-circle: 9999px;
+  --str-chat__border-radius-md: 1rem;
+  --str-chat__border-radius-sm: 0.85rem;
+  height: 100%;
+}
+
+.str-chat__channel-list-messenger,
+.str-chat__main-panel,
+.str-chat__thread {
+  height: 100%;
+}
+
+.str-chat__list,
+.str-chat__message-list-scroll {
+  background: transparent;
 }

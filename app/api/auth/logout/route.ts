@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 
 export async function POST() {
-  const cookieStore = await cookies()
-  cookieStore.delete('admin_token')
-  
-  return NextResponse.json({ success: true })
+  return NextResponse.json(
+    { error: 'Sign out is now handled by Clerk on the client.' },
+    { status: 410 }
+  )
 }
