@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import useSWR from "swr"
-import { format } from "date-fns"
+import { format, parseISO } from "date-fns"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -241,7 +241,7 @@ export default function AppointmentsPage() {
                           <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
                             <span className="flex items-center gap-1.5 bg-black/20 dark:bg-white/5 px-2 py-1 rounded-lg">
                               <Calendar className="h-3 w-3" />
-                              {format(new Date(appointment.date), "MMM d, yyyy")}
+                              {format(parseISO(appointment.date.split('T')[0]), "MMM d, yyyy")}
                             </span>
                             <span className="flex items-center gap-1.5 bg-black/20 dark:bg-white/5 px-2 py-1 rounded-lg">
                               <Clock className="h-3 w-3" />
@@ -336,7 +336,7 @@ export default function AppointmentsPage() {
                 )}
                 <div className="flex items-center gap-3">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>{format(new Date(selectedAppointment.date), "EEEE, MMMM d, yyyy")}</span>
+                  <span>{format(parseISO(selectedAppointment.date.split('T')[0]), "EEEE, MMMM d, yyyy")}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Clock className="h-4 w-4 text-muted-foreground" />

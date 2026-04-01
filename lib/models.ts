@@ -116,7 +116,7 @@ export interface ISettings extends Document {
 const SettingsSchema = new Schema<ISettings>({
   companyName: { type: String, default: 'My Company' },
   companyEmail: { type: String, default: '' },
-  timezone: { type: String, default: 'UTC' },
+  timezone: { type: String, default: 'Asia/Kolkata' },
   bookingLeadTime: { type: Number, default: 24 },
   maxAdvanceBooking: { type: Number, default: 60 },
   autoApprove: { type: Boolean, default: false },

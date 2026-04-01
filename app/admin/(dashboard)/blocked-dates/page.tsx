@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import useSWR from "swr"
-import { format } from "date-fns"
+import { format, parseISO } from "date-fns"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -48,7 +48,7 @@ export default function BlockedDatesPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          date: selectedDate.toISOString(),
+          date: format(selectedDate, "yyyy-MM-dd"),
           allDay,
           startTime: allDay ? undefined : startTime,
           endTime: allDay ? undefined : endTime,
@@ -212,7 +212,7 @@ export default function BlockedDatesPage() {
                       >
                         <div className="space-y-1">
                           <p className="font-bold tracking-tight">
-                            {format(new Date(blocked.date), "EEEE, MMMM d, yyyy")}
+                            {format(parseISO(blocked.date.split('T')[0]), "EEEE, MMMM d, yyyy")}
                           </p>
                           <div className="flex items-center gap-3">
                             <Badge variant="outline" className="text-[10px] uppercase font-black tracking-widest bg-primary/5 text-primary border-primary/20">
@@ -248,7 +248,7 @@ export default function BlockedDatesPage() {
                       >
                         <div>
                           <p className="text-sm font-bold">
-                            {format(new Date(blocked.date), "MMMM d, yyyy")}
+                            {format(parseISO(blocked.date.split('T')[0]), "MMMM d, yyyy")}
                           </p>
                           <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                             {blocked.allDay ? "All day" : `${blocked.startTime} - ${blocked.endTime}`}

@@ -27,9 +27,10 @@ export async function POST(request: Request) {
     await connectToDatabase()
     const data = await request.json()
     
+    const dateOnly = data.date.split('T')[0]
     const blockedDate = new BlockedDate({
       ...data,
-      date: new Date(data.date)
+      date: new Date(`${dateOnly}T00:00:00Z`)
     })
     await blockedDate.save()
     

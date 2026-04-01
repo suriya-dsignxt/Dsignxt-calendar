@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { connectToDatabase } from '@/lib/mongodb'
 import { Availability, BlockedDate, Appointment, Settings } from '@/lib/models'
 import { format, parseISO, addMinutes, isBefore, startOfDay, addHours } from 'date-fns'
+import { toZonedTime, fromZonedTime, formatInTimeZone } from 'date-fns-tz'
 
 interface TimeSlot {
   time: string
@@ -9,11 +10,18 @@ interface TimeSlot {
   available: boolean
 }
 
-function generateTimeSlots(startTime: string, endTime: string, duration: number): { time: string; endTime: string }[] {
+function generateTimeSlots(startTime: string, endTime: string, duration: number, date: Date, timezone: string): { time: string; endTime: string }[] {
   const slots: { time: string; endTime: string }[] = []
   const [startHour, startMin] = startTime.split(':').map(Number)
   const [endHour, endMin] = endTime.split(':').map(Number)
   
+  // Create start and end times in the target timezone
+  const startDateTime = new Date(date)
+  startDateTime.setUTCHours(startHour, startMin, 0, 0)
+  // Note: Since 'date' is already UTC midnight for the target day, 
+  // setting UTC hours to local hours is just a starting point for the string-based HH:mm generation.
+  // The actual availability is defined by these HH:mm strings in that timezone's context.
+
   let currentTime = new Date()
   currentTime.setHours(startHour, startMin, 0, 0)
   
@@ -48,11 +56,14 @@ export async function GET(request: Request) {
       )
     }
     
-    const date = parseISO(dateStr)
-    const dayOfWeek = date.getDay()
+    const dateOnly = dateStr.split('T')[0]
+    const date = new Date(`${dateOnly}T00:00:00Z`)
+    const nextDayUtc = new Date(date.getTime() + 24 * 60 * 60 * 1000)
+    const dayOfWeek = date.getUTCDay()
     
-    // Get settings for lead time check
+    // Get settings for lead time and timezone
     const settings = await Settings.findOne()
+    const timezone = settings?.timezone || 'UTC'
     const leadTimeHours = settings?.bookingLeadTime || 24
     
     // Check if this date is in the past or within lead time
@@ -79,8 +90,8 @@ export async function GET(request: Request) {
     // Check if date is blocked
     const blockedDate = await BlockedDate.findOne({
       date: {
-        $gte: startOfDay(date),
-        $lt: new Date(startOfDay(date).getTime() + 24 * 60 * 60 * 1000)
+        $gte: date,
+        $lt: nextDayUtc
       }
     })
     
@@ -95,14 +106,16 @@ export async function GET(request: Request) {
     const baseSlots = generateTimeSlots(
       availability.startTime,
       availability.endTime,
-      availability.slotDuration
+      availability.slotDuration,
+      date,
+      timezone
     )
     
     // Get existing appointments for this date
     const appointments = await Appointment.find({
       date: {
-        $gte: startOfDay(date),
-        $lt: new Date(startOfDay(date).getTime() + 24 * 60 * 60 * 1000)
+        $gte: date,
+        $lt: nextDayUtc
       },
       status: { $in: ['pending', 'approved'] }
     })
@@ -120,14 +133,12 @@ export async function GET(request: Request) {
         isBlocked = slot.time >= blockedDate.startTime && slot.time < blockedDate.endTime
       }
       
-      // Check if slot is within lead time for today
+      // Check if slot is within lead time
       let isPastLeadTime = false
-      if (format(date, 'yyyy-MM-dd') === format(now, 'yyyy-MM-dd')) {
-        const [slotHour, slotMin] = slot.time.split(':').map(Number)
-        const slotDateTime = new Date(date)
-        slotDateTime.setHours(slotHour, slotMin, 0, 0)
-        isPastLeadTime = isBefore(slotDateTime, minBookingTime)
-      }
+      const slotDateTimeStr = `${dateOnly} ${slot.time}`
+      // Convert the slot's local time to a UTC Date object for comparison
+      const slotDateTime = fromZonedTime(slotDateTimeStr, timezone)
+      isPastLeadTime = isBefore(slotDateTime, minBookingTime)
       
       return {
         ...slot,

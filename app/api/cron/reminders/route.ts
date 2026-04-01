@@ -3,6 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb'
 import { Appointment, Notification, Settings } from '@/lib/models'
 import { sendEmail, getReminderEmail } from '@/lib/email'
 import { format, addMinutes, subMinutes, differenceInMinutes } from 'date-fns'
+import { fromZonedTime } from 'date-fns-tz'
 
 /**
  * API Endpoint: GET /api/cron/reminders
@@ -19,14 +20,12 @@ export async function GET(request: Request) {
 
     await connectToDatabase()
     
-    // Get company settings for admin email and timezone info
     const settings = await Settings.findOne()
     const adminEmail = settings?.companyEmail || process.env.ADMIN_EMAIL
-
+    const timezone = settings?.timezone || 'UTC'
     const now = new Date()
     
     // Define the time windows
-    // We fetch appointments for the next hour to be safe
     const searchEnd = addMinutes(now, 60)
     const searchStart = subMinutes(now, 60)
 
@@ -40,10 +39,10 @@ export async function GET(request: Request) {
     for (const apt of appointments) {
       results.processed++
       
-      // Calculate appointment start time (with robustness)
-      const aptDate = new Date(apt.date)
-      const [hours, mins] = apt.startTime.split(':').map(Number)
-      aptDate.setHours(hours, mins, 0, 0)
+      // Calculate appointment start time correctly using the company timezone
+      const datePart = format(new Date(apt.date), 'yyyy-MM-dd')
+      const aptStartTimeStr = `${datePart} ${apt.startTime}`
+      const aptDate = fromZonedTime(aptStartTimeStr, timezone)
 
       // Time difference in minutes
       const diffInMinutes = differenceInMinutes(aptDate, now)

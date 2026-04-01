@@ -21,9 +21,11 @@ export async function GET(request: Request) {
     }
     
     if (startDate && endDate) {
+      const sDateOnly = startDate.split('T')[0]
+      const eDateOnly = endDate.split('T')[0]
       query.date = {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate)
+        $gte: new Date(`${sDateOnly}T00:00:00Z`),
+        $lte: new Date(`${eDateOnly}T00:00:00Z`)
       }
     }
 
@@ -53,9 +55,12 @@ export async function POST(request: Request) {
     await connectToDatabase()
     const data = await request.json()
     
+    const dateOnly = data.date.split('T')[0]
+    const targetDate = new Date(`${dateOnly}T00:00:00Z`)
+
     // Check if any part of the requested time range is already booked
     const overlappingAppointment = await Appointment.findOne({
-      date: new Date(data.date),
+      date: targetDate,
       status: { $in: ['pending', 'approved'] },
       $and: [
         { startTime: { $lt: data.endTime } },
@@ -79,7 +84,7 @@ export async function POST(request: Request) {
     
     const appointment = new Appointment({
       ...data,
-      date: new Date(data.date),
+      date: targetDate,
       status: autoApprove ? 'approved' : 'pending',
       otpCode
     })

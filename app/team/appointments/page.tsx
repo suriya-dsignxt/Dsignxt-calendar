@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import useSWR from "swr"
-import { format } from "date-fns"
+import { format, parseISO } from "date-fns"
+import { toZonedTime, formatInTimeZone } from "date-fns-tz"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -44,6 +45,9 @@ interface Appointment {
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export default function TeamAppointmentsPage() {
+  const { data: settings } = useSWR<any>("/api/settings", fetcher)
+  const timezone = settings?.timezone || "Asia/Kolkata"
+  
   const [selectedTab, setSelectedTab] = useState("all")
   const [search, setSearch] = useState("")
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
@@ -135,7 +139,7 @@ export default function TeamAppointmentsPage() {
                           <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
                             <span className="flex items-center gap-1.5 bg-black/20 dark:bg-white/5 px-2 py-1 rounded-lg">
                               <Calendar className="h-3 w-3" />
-                              {format(new Date(appointment.date), "MMM d, yyyy")}
+                              {formatInTimeZone(parseISO(appointment.date.split('T')[0]), timezone, "MMM d, yyyy")}
                             </span>
                             <span className="flex items-center gap-1.5 bg-black/20 dark:bg-white/5 px-2 py-1 rounded-lg">
                               <Clock className="h-3 w-3" />
@@ -185,7 +189,7 @@ export default function TeamAppointmentsPage() {
                 )}
                 <div className="flex items-center gap-3">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>{format(new Date(selectedAppointment.date), "EEEE, MMMM d, yyyy")}</span>
+                  <span>{formatInTimeZone(parseISO(selectedAppointment.date.split('T')[0]), timezone, "EEEE, MMMM d, yyyy")}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Clock className="h-4 w-4 text-muted-foreground" />

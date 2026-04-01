@@ -18,6 +18,7 @@ import {
   startOfDay,
   addDays,
 } from "date-fns"
+import { toZonedTime, fromZonedTime, formatInTimeZone } from "date-fns-tz"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -62,6 +63,8 @@ interface AvailabilitySlot {
 
 interface Settings {
   companyName: string
+  companyEmail: string
+  timezone: string
   maxAdvanceBooking: number
 }
 
@@ -82,6 +85,8 @@ export default function BookingPage() {
     title: "",
     description: "",
   })
+  const [useLocalTime, setUseLocalTime] = useState(false)
+  const clientTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
   const [showManageBooking, setShowManageBooking] = useState(false)
   const [manageBookingId, setManageBookingId] = useState("")
@@ -177,7 +182,7 @@ export default function BookingPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          date: selectedDate.toISOString(),
+          date: format(selectedDate, "yyyy-MM-dd"),
           startTime,
           endTime,
         }),
@@ -336,11 +341,28 @@ export default function BookingPage() {
                     : "Select a Time"
                   }
                 </CardTitle>
-                <CardDescription>
-                  {selectedDate 
-                    ? "Choose a time slot that works for you"
-                    : "Please select a date first to see available times"
-                  }
+                <CardDescription className="flex items-center justify-between">
+                  <span>
+                    {selectedDate 
+                      ? "Choose a time slot that works for you"
+                      : "Please select a date first to see available times"
+                    }
+                  </span>
+                  {selectedDate && settings?.timezone && (
+                    <div className="flex items-center gap-2">
+                       <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                        {useLocalTime ? `Your time (${clientTimezone})` : `Host time (${settings.timezone})`}
+                       </span>
+                       <Button 
+                         variant="ghost" 
+                         size="sm" 
+                         className="h-6 px-2 text-[10px]"
+                         onClick={() => setUseLocalTime(!useLocalTime)}
+                       >
+                         Switch to {useLocalTime ? "Host" : "Local"}
+                       </Button>
+                    </div>
+                  )}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -383,9 +405,23 @@ export default function BookingPage() {
                             selectedSlots.some(s => s.time === slot.time) && "border-emerald-500 bg-emerald-100/80"
                           )}
                         >
-                          <span className="font-medium">{slot.time}</span>
+                          <span className="font-medium">
+                            {useLocalTime && settings?.timezone ? (
+                              formatInTimeZone(
+                                fromZonedTime(`${format(selectedDate, 'yyyy-MM-dd')} ${slot.time}`, settings.timezone),
+                                clientTimezone,
+                                'HH:mm'
+                              )
+                            ) : slot.time}
+                          </span>
                           <span className="text-xs text-muted-foreground">
-                            to {slot.endTime}
+                            to {useLocalTime && settings?.timezone ? (
+                              formatInTimeZone(
+                                fromZonedTime(`${format(selectedDate, 'yyyy-MM-dd')} ${slot.endTime}`, settings.timezone),
+                                clientTimezone,
+                                'HH:mm'
+                              )
+                            ) : slot.endTime}
                           </span>
                           {!slot.available && (
                             <Badge variant="secondary" className="mt-1 text-[10px]">

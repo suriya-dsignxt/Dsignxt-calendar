@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Calendar, Clock, Users, CheckCircle2, XCircle, AlertCircle, ArrowRight } from "lucide-react"
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns"
+import { toZonedTime, formatInTimeZone } from "date-fns-tz"
 import Link from "next/link"
 
 interface Appointment {
@@ -23,7 +24,10 @@ interface Appointment {
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export default function AdminDashboardPage() {
-  const today = new Date()
+  const { data: settings } = useSWR<any>("/api/settings", fetcher)
+  const timezone = settings?.timezone || "Asia/Kolkata"
+  
+  const today = toZonedTime(new Date(), timezone)
   const weekStart = startOfWeek(today)
   const weekEnd = endOfWeek(today)
   const monthStart = startOfMonth(today)
@@ -148,7 +152,10 @@ export default function AdminDashboardPage() {
                           {appointment.title}
                         </p>
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground mt-1">
-                          <div className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {format(new Date(appointment.date), "MMM d, yyyy")}</div>
+                          <div className="flex items-center gap-1.5">
+                            <Calendar className="h-3.5 w-3.5" /> 
+                            {formatInTimeZone(new Date(appointment.date), timezone, "MMM d, yyyy")}
+                          </div>
                           <div className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> {appointment.startTime} - {appointment.endTime}</div>
                         </div>
                       </div>
@@ -201,7 +208,10 @@ export default function AdminDashboardPage() {
                             {appointment.clientName}
                           </p>
                           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground mt-1">
-                            <div className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {format(new Date(appointment.date), "EEE, MMM d")}</div>
+                            <div className="flex items-center gap-1.5">
+                              <Calendar className="h-3.5 w-3.5" /> 
+                              {formatInTimeZone(new Date(appointment.date), timezone, "EEE, MMM d")}
+                            </div>
                             <div className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> {appointment.startTime}</div>
                           </div>
                         </div>

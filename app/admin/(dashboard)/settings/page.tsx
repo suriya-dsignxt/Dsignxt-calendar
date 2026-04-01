@@ -21,17 +21,26 @@ interface Settings {
 }
 
 const TIMEZONES = [
-  { value: "UTC", label: "UTC" },
-  { value: "America/New_York", label: "Eastern Time (ET)" },
-  { value: "America/Chicago", label: "Central Time (CT)" },
-  { value: "America/Denver", label: "Mountain Time (MT)" },
-  { value: "America/Los_Angeles", label: "Pacific Time (PT)" },
-  { value: "Europe/London", label: "London (GMT)" },
-  { value: "Europe/Paris", label: "Paris (CET)" },
-  { value: "Asia/Tokyo", label: "Tokyo (JST)" },
-  { value: "Asia/Dubai", label: "Dubai (GST)" },
-  { value: "Asia/Kolkata", label: "India (IST)" },
-  { value: "Australia/Sydney", label: "Sydney (AEDT)" },
+  { value: "UTC", label: "(UTC+00:00) UTC" },
+  { value: "America/Anchorage", label: "(UTC-09:00) Alaska Time" },
+  { value: "America/Los_Angeles", label: "(UTC-08:00) Pacific Time (PT)" },
+  { value: "America/Denver", label: "(UTC-07:00) Mountain Time (MT)" },
+  { value: "America/Chicago", label: "(UTC-06:00) Central Time (CT)" },
+  { value: "America/New_York", label: "(UTC-05:00) Eastern Time (ET)" },
+  { value: "America/Halifax", label: "(UTC-04:00) Atlantic Time" },
+  { value: "America/Sao_Paulo", label: "(UTC-03:00) Brasilia" },
+  { value: "Atlantic/Cape_Verde", label: "(UTC-01:00) Cape Verde" },
+  { value: "Europe/London", label: "(UTC+00:00) London (GMT)" },
+  { value: "Europe/Paris", label: "(UTC+01:00) Paris (CET)" },
+  { value: "Africa/Cairo", label: "(UTC+02:00) Cairo" },
+  { value: "Europe/Moscow", label: "(UTC+03:00) Moscow" },
+  { value: "Asia/Dubai", label: "(UTC+04:00) Dubai (GST)" },
+  { value: "Asia/Kolkata", label: "(UTC+05:30) India (IST)" },
+  { value: "Asia/Dhaka", label: "(UTC+06:00) Dhaka" },
+  { value: "Asia/Bangkok", label: "(UTC+07:00) Bangkok" },
+  { value: "Asia/Tokyo", label: "(UTC+09:00) Tokyo (JST)" },
+  { value: "Australia/Sydney", label: "(UTC+11:00) Sydney (AEDT)" },
+  { value: "Pacific/Auckland", label: "(UTC+13:00) Auckland" },
 ]
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())

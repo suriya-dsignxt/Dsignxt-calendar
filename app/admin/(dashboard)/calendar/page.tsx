@@ -19,6 +19,7 @@ import {
   subDays,
   isToday,
 } from "date-fns"
+import { toZonedTime, formatInTimeZone } from "date-fns-tz"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -72,7 +73,9 @@ type ViewMode = "month" | "week" | "day"
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export default function CalendarPage() {
-  const [currentDate, setCurrentDate] = useState(new Date())
+  const { data: settings } = useSWR<any>("/api/settings", fetcher)
+  const timezone = settings?.timezone || "Asia/Kolkata"
+  const [currentDate, setCurrentDate] = useState(() => toZonedTime(new Date(), timezone))
   const [viewMode, setViewMode] = useState<ViewMode>("month")
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
 
@@ -120,7 +123,7 @@ export default function CalendarPage() {
     }
   }
 
-  const goToToday = () => setCurrentDate(new Date())
+  const goToToday = () => setCurrentDate(toZonedTime(new Date(), timezone))
 
   const getStatusColor = (apt: Appointment) => {
     switch (apt.status) {
@@ -179,7 +182,7 @@ export default function CalendarPage() {
                   !isSameMonth(day, currentDate) && "text-muted-foreground"
                 )}
               >
-                {format(day, "d")}
+                {formatInTimeZone(day, timezone, "d")}
               </span>
             </div>
             <div className="space-y-1">
@@ -219,14 +222,14 @@ export default function CalendarPage() {
               isToday(day) && "bg-primary/5"
             )}
           >
-            <div className="text-sm font-medium">{format(day, "EEE")}</div>
+            <div className="text-sm font-medium">{formatInTimeZone(day, timezone, "EEE")}</div>
             <div
               className={cn(
                 "text-2xl",
                 isToday(day) && "text-primary font-bold"
               )}
             >
-              {format(day, "d")}
+              {formatInTimeZone(day, timezone, "d")}
             </div>
           </div>
         ))}
@@ -239,7 +242,7 @@ export default function CalendarPage() {
                 key={hour}
                 className="h-16 text-xs text-muted-foreground text-right pr-2 pt-1"
               >
-                {format(new Date().setHours(hour, 0), "h a")}
+                {formatInTimeZone(new Date().setHours(hour, 0), timezone, "h a")}
               </div>
             ))}
           </div>
@@ -291,7 +294,7 @@ export default function CalendarPage() {
               key={hour}
               className="h-16 text-xs text-muted-foreground text-right pr-2 pt-1"
             >
-              {format(new Date().setHours(hour, 0), "h a")}
+              {formatInTimeZone(new Date().setHours(hour, 0), timezone, "h a")}
             </div>
           ))}
         </div>
@@ -346,10 +349,10 @@ export default function CalendarPage() {
           </Button>
           <h2 className="text-sm sm:text-lg font-black tracking-tight ml-2">
             {viewMode === "day"
-              ? format(currentDate, "EEEE, MMMM d, yyyy")
+              ? formatInTimeZone(currentDate, timezone, "EEEE, MMMM d, yyyy")
               : viewMode === "week"
-              ? `${format(dateRange.start, "MMM d")} - ${format(dateRange.end, "MMM d, yyyy")}`
-              : format(currentDate, "MMMM yyyy")}
+              ? `${formatInTimeZone(dateRange.start, timezone, "MMM d")} - ${formatInTimeZone(dateRange.end, timezone, "MMM d, yyyy")}`
+              : formatInTimeZone(currentDate, timezone, "MMMM yyyy")}
           </h2>
         </div>
         
@@ -439,7 +442,7 @@ export default function CalendarPage() {
               <div className="rounded-lg border p-4 space-y-3">
                 <div className="flex items-center gap-3">
                   <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                  <span>{format(new Date(selectedAppointment.date), "EEEE, MMMM d, yyyy")}</span>
+                  <span>{formatInTimeZone(new Date(selectedAppointment.date), timezone, "EEEE, MMMM d, yyyy")}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Clock className="h-4 w-4 text-muted-foreground" />
