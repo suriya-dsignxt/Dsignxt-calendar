@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { 
   CheckCircle2, 
+  Check,
   Circle, 
   Plus, 
   ChevronLeft, 
@@ -92,58 +93,61 @@ function DraggableTaskItem({
       {...attributes}
       {...listeners}
       className={cn(
-        "group relative flex items-start gap-4 p-4 rounded-2xl border border-white/10 bg-white/50 dark:bg-zinc-900/50 transition-all hover:shadow-lg hover:border-white/30 cursor-grab active:cursor-grabbing",
-        isDragging && "ring-2 ring-primary/50 shadow-2xl scale-105",
-        isSelected && "border-primary/40 bg-primary/5"
+        "group relative flex items-center gap-4 p-3 rounded-2xl border border-black/10 dark:border-white/10 bg-white shadow-md dark:bg-white/5 backdrop-blur-xl transition-all hover:bg-black/[0.01] dark:hover:bg-white/10 cursor-grab active:cursor-grabbing",
+        isDragging && "ring-1 ring-primary shadow-xl scale-102 z-50",
+        isSelected && "border-primary/50 bg-primary/[0.05] dark:bg-primary/10 shadow-inner"
       )}
     >
-      <div className="flex flex-col items-center gap-4 py-1">
+      <div className="flex shrink-0 p-1" onPointerDown={(e) => e.stopPropagation()}>
         <Checkbox 
           checked={isSelected} 
           onCheckedChange={() => onSelect(task._id)}
-          onPointerDown={(e) => e.stopPropagation()}
-          className="rounded-md border-white/20 data-[state=checked]:bg-primary data-[state=checked]:border-none"
+          className="h-5 w-5 rounded-md border-2 border-primary/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary transition-all shadow-sm"
         />
-        <button 
-          onPointerDown={(e) => e.stopPropagation()} // Prevent drag when toggling
-          onClick={() => onToggle(task._id, task.status)} 
-          className="transition-transform active:scale-90"
-        >
-          {task.status === 'completed' ? (
-            <CheckCircle2 className="h-5 w-5 text-primary" />
-          ) : (
-            <Circle className="h-5 w-5 text-muted-foreground transition-colors group-hover:text-primary" />
-          )}
-        </button>
       </div>
 
       <div className="flex-1 min-w-0" onClick={() => onView(task)}>
         <h4 className={cn(
-          "text-sm font-bold tracking-tight mb-1",
-          task.status === 'completed' && "line-through opacity-50"
+          "text-sm font-bold tracking-tight",
+          task.status === 'completed' && "line-through opacity-40"
         )}>
           {task.title}
         </h4>
         {task.description && (
-          <p className="text-xs text-muted-foreground font-medium leading-relaxed line-clamp-1 group-hover:line-clamp-none transition-all">
+          <p className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest leading-none mt-1 line-clamp-1">
             {task.description}
           </p>
         )}
-        
-        <div className="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-all" onPointerDown={(e) => e.stopPropagation()}>
-           {task.status === 'pending' && (
-             <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); onPush(task._id); }} className="h-7 text-[10px] font-black uppercase tracking-widest rounded-lg border-primary/20 hover:bg-primary hover:text-primary-foreground">
-                <ArrowRight className="h-3 w-3 mr-1" />
-                Push
-             </Button>
+      </div>
+
+      <div className="flex items-center gap-2 shrink-0" onPointerDown={(e) => e.stopPropagation()}>
+         <button 
+           onClick={() => onToggle(task._id, task.status)} 
+           className="transition-all hover:scale-110 active:scale-90 p-1"
+         >
+           {task.status === 'completed' ? (
+             <div className="h-5 w-5 rounded-full border-2 border-emerald-500 flex items-center justify-center bg-emerald-500/10">
+                <Check className="h-3.5 w-3.5 text-emerald-500 stroke-[3]" />
+             </div>
+           ) : (
+             <Circle className="h-5 w-5 text-muted-foreground/30 transition-colors hover:text-primary" />
            )}
-           <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); onDelete(task._id); }} className="h-7 w-7 p-0 text-red-500 hover:bg-red-500/10 rounded-lg">
-              <Trash2 className="h-3 w-3" />
+         </button>
+
+         {task.status === 'pending' && (
+           <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); onPush(task._id); }} className="h-8 px-3 text-[8px] font-black uppercase tracking-widest rounded-lg border-primary/20 hover:bg-primary hover:text-primary-foreground hover:border-transparent transition-all shadow-sm">
+              <ArrowRight className="h-3 w-3 mr-1.5" />
+              Push
            </Button>
-           <div className="ml-auto p-1 opacity-20 group-hover:opacity-60">
-             <MoreVertical className="h-4 w-4" />
-           </div>
-        </div>
+         )}
+         
+         <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); onDelete(task._id); }} className="h-8 w-8 p-0 text-red-500/40 hover:text-red-500 hover:bg-red-500/5 rounded-lg transition-all">
+            <Trash2 className="h-3 w-3" />
+         </Button>
+         
+         <div className="p-1 opacity-10 group-hover:opacity-100 transition-all cursor-move">
+           <MoreVertical className="h-4 w-4" />
+         </div>
       </div>
     </div>
   );
@@ -156,20 +160,20 @@ function DroppableContainer({ id, children, title, subtitle, badgeText, count, i
     <Card 
       ref={setNodeRef}
       className={cn(
-        "border-white/20 dark:border-zinc-800 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden self-start transition-all duration-300",
-        isOver && "ring-2 ring-primary/50 bg-primary/5 scale-[1.01]",
-        id === 'completed' && "opacity-90 grayscale-[0.3] hover:grayscale-0 hover:opacity-100"
+        "border-black/5 dark:border-white/5 bg-zinc-50/30 dark:bg-white/5 backdrop-blur-2xl shadow-xl rounded-[1.5rem] overflow-hidden self-start transition-all duration-500",
+        isOver && "ring-1 ring-primary/50 bg-primary/[0.02] scale-[1.005]",
+        id === 'completed' && "opacity-80 grayscale-[0.3] hover:grayscale-0 hover:opacity-100"
       )}
     >
-      <CardHeader className="border-b border-white/10 bg-gradient-to-r from-primary/5 to-transparent pb-6">
+      <CardHeader className="border-b border-black/5 dark:border-white/5 bg-black/[0.02] dark:bg-black/20 p-5">
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-xl font-black tracking-tight">{title}</CardTitle>
-            <CardDescription className="text-[10px] font-bold uppercase tracking-widest opacity-60">{subtitle}</CardDescription>
+          <div className="space-y-0.5">
+            <CardTitle className="text-lg font-black tracking-tight text-foreground/90">{title}</CardTitle>
+            <CardDescription className="text-[9px] font-black uppercase tracking-[0.2em] text-primary/40">{subtitle}</CardDescription>
           </div>
           <Badge variant="secondary" className={cn(
-            "rounded-lg px-2.5 py-1 text-[10px] font-black uppercase border-none",
-            id === 'pending' ? "bg-primary/10 text-primary" : "bg-emerald-500/10 text-emerald-500"
+            "rounded-lg px-2.5 py-1 text-[9px] font-black uppercase tracking-widest border border-white/5 shadow-md",
+            id === 'pending' ? "bg-primary text-primary-foreground" : "bg-emerald-500/10 text-emerald-500"
           )}>
             {count} {badgeText}
           </Badge>
@@ -178,19 +182,19 @@ function DroppableContainer({ id, children, title, subtitle, badgeText, count, i
       <CardContent className="p-0">
         <ScrollArea className="h-[500px]">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center p-20 gap-4 opacity-50">
-              <Loader2 className="h-10 w-10 animate-spin text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Sycing...</span>
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <Loader2 className="h-8 w-8 animate-spin text-primary/30" />
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-primary/20">Syncing...</span>
             </div>
           ) : count === 0 ? (
-            <div className="flex flex-col items-center justify-center p-20 text-center space-y-4 opacity-40">
-               <div className="h-16 w-16 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center -rotate-3">
-                  <ListTodo className="h-8 w-8" />
+            <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+               <div className="h-14 w-14 bg-black/5 rounded-xl border border-black/5 flex items-center justify-center -rotate-3 transition-transform hover:rotate-0">
+                  <ListTodo className="h-7 w-7 text-primary/10" />
                </div>
-               <p className="text-sm font-bold uppercase tracking-tight">No tasks here</p>
+               <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground/20">Sector Clear</p>
             </div>
           ) : (
-            <div className="p-4 space-y-3">
+            <div className="p-4 space-y-2">
               {children}
             </div>
           )}
@@ -204,11 +208,16 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export function TasksClient() {
   const [selectedDate, setSelectedDate] = useState(new Date())
+  const [mounted, setMounted] = useState(false)
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [newTask, setNewTask] = useState({ title: "", description: "" })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set())
   const [viewingTask, setViewingTask] = useState<Task | null>(null)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -354,30 +363,35 @@ export function TasksClient() {
   const completedTasks = Array.isArray(tasks) ? tasks.filter(t => t.status === 'completed') : []
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-black tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">Daily Planner</h2>
-          <p className="text-muted-foreground font-medium">Manage your daily tasks and productivity</p>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-zinc-50/80 dark:bg-white/5 backdrop-blur-2xl p-6 rounded-[2rem] border border-black/5 dark:border-white/5 shadow-xl relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] to-transparent pointer-events-none" />
+        <div className="relative z-10">
+          <h2 className="text-2xl font-black tracking-tight bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent uppercase">Daily Planner</h2>
+          <p className="text-[9px] font-black uppercase tracking-[0.3em] text-primary/40 mt-1">Operational Oversight</p>
         </div>
         
-        <div className="flex items-center gap-3 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl p-1.5 rounded-2xl border border-white/20 shadow-xl">
-           <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl" onClick={() => setSelectedDate(subDays(selectedDate, 1))}>
-              <ChevronLeft className="h-4 w-4" />
-           </Button>
-           <div className="flex items-center gap-2 px-4 py-1.5 bg-primary/10 rounded-xl">
-              <CalendarIcon className="h-4 w-4 text-primary" />
-              <span className="text-xs font-black uppercase tracking-widest min-w-[120px] text-center">
-                {format(selectedDate, "EEE, MMM d")}
+        <div className="flex flex-wrap items-center gap-3 relative z-10">
+           <div className="flex items-center gap-1.5 bg-white/50 dark:bg-black/40 p-1.5 rounded-xl border border-black/5 dark:border-white/5 shadow-inner">
+             <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-primary/10 text-primary transition-all" onClick={() => setSelectedDate(subDays(selectedDate, 1))}>
+                <ChevronLeft className="h-4 w-4" />
+             </Button>
+             <div className="h-4 w-[1px] bg-black/5 dark:bg-white/10" />
+             <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-primary/10 text-primary transition-all" onClick={() => setSelectedDate(addDays(selectedDate, 1))}>
+                <ChevronRight className="h-4 w-4" />
+             </Button>
+           </div>
+           
+           <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-black/5 shadow-md min-w-[160px] justify-center">
+              <CalendarIcon className="h-3.5 w-3.5 text-primary/40" />
+              <span className="text-[9px] font-black uppercase tracking-[0.1em] text-foreground/70">
+                {mounted ? format(selectedDate, "EEE, MMM d") : "Loading..."}
               </span>
            </div>
-           <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl" onClick={() => setSelectedDate(addDays(selectedDate, 1))}>
-              <ChevronRight className="h-4 w-4" />
-           </Button>
-           <div className="w-px h-6 bg-white/20 mx-1" />
-           <Button onClick={() => setIsAddOpen(true)} className="h-9 rounded-xl shadow-lg shadow-primary/20">
+
+           <Button onClick={() => setIsAddOpen(true)} className="h-10 px-6 rounded-xl bg-primary text-primary-foreground font-black uppercase text-[9px] tracking-[0.2em] shadow-lg shadow-primary/10 hover:scale-105 active:scale-95 transition-all">
               <Plus className="h-4 w-4 mr-2" />
-              Add Task
+              New Assignment
            </Button>
         </div>
       </div>
@@ -435,30 +449,33 @@ export function TasksClient() {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 50 }}
-                className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-zinc-900/90 text-white backdrop-blur-xl px-6 py-4 rounded-3xl border border-white/20 shadow-2xl flex items-center gap-6"
+                className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-[#02031c] text-white px-6 py-4 rounded-[2rem] border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.4)] flex items-center gap-6"
               >
                 <div className="flex items-center gap-3 border-r border-white/10 pr-6">
-                  <div className="h-8 w-8 bg-primary rounded-xl flex items-center justify-center text-white font-black text-xs">
+                  <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground font-black text-[10px] shadow-lg shadow-primary/30">
                     {selectedTasks.size}
                   </div>
-                  <span className="text-xs font-black uppercase tracking-widest opacity-70">Selected</span>
+                  <div className="flex flex-col">
+                    <span className="text-[9px] font-black uppercase tracking-[0.1em] text-white leading-none">Selected</span>
+                    <span className="text-[7px] font-bold uppercase tracking-[0.2em] text-primary mt-1">Operational Batch</span>
+                  </div>
                 </div>
                 
                 <div className="flex items-center gap-3">
                   <Button 
                     onClick={handlePushSelected} 
                     disabled={isSubmitting}
-                    className="h-10 rounded-xl bg-white text-black hover:bg-white/90 text-[10px] font-black uppercase tracking-widest px-4"
+                    className="h-10 rounded-lg bg-white text-black hover:bg-white/90 text-[8px] font-black uppercase tracking-[0.2em] px-4 shadow-xl"
                   >
-                    {isSubmitting ? <Loader2 className="h-3 w-3 animate-spin mr-2" /> : <ArrowRight className="h-4 w-4 mr-2" />}
-                    Push to Tomorrow
+                    {isSubmitting ? <Loader2 className="h-3 w-3 animate-spin mr-2" /> : <ArrowRight className="h-3 w-3 mr-2" />}
+                    Move Tomorrow
                   </Button>
                   <Button 
                     variant="ghost" 
                     onClick={() => setSelectedTasks(new Set())}
-                    className="h-10 rounded-xl text-white/50 hover:text-white text-[10px] font-black uppercase tracking-widest"
+                    className="h-10 rounded-lg text-white/70 hover:text-white hover:bg-white/10 text-[8px] font-black uppercase tracking-[0.2em] px-4"
                   >
-                    Clear
+                    Abort
                   </Button>
                 </div>
               </motion.div>
