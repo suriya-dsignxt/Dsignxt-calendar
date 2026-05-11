@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import useSWR from "swr"
-import { Bell, Check, CheckCheck } from "lucide-react"
+import { Bell, Check, CheckCheck, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -45,11 +45,28 @@ export function NotificationBell() {
     mutate()
   }
 
+  const deleteNotification = async (id: string) => {
+    await fetch("/api/notifications", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    })
+    mutate()
+  }
+
   const markAllAsRead = async () => {
     await fetch("/api/notifications", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ markAllRead: true }),
+    })
+    mutate()
+  }
+
+  const clearAllNotifications = async () => {
+    if (!confirm("Are you sure you want to clear all notifications?")) return
+    await fetch("/api/notifications", {
+      method: "DELETE",
     })
     mutate()
   }
@@ -66,22 +83,35 @@ export function NotificationBell() {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0" align="end">
-        <div className="flex items-center justify-between border-b px-4 py-3">
-          <h4 className="font-semibold">Notifications</h4>
-          {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
-              onClick={markAllAsRead}
-            >
-              <CheckCheck className="mr-1 h-3 w-3" />
-              Mark all read
-            </Button>
-          )}
+      <PopoverContent className="w-80 p-0 overflow-hidden rounded-2xl border-white/20 dark:border-white/10 shadow-2xl" align="end">
+        <div className="flex items-center justify-between border-b border-white/10 bg-muted/30 px-4 py-3">
+          <h4 className="text-sm font-bold uppercase tracking-widest">Notifications</h4>
+          <div className="flex items-center gap-2">
+            {unreadCount > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all"
+                onClick={markAllAsRead}
+              >
+                <CheckCheck className="mr-1.5 h-3.5 w-3.5" />
+                Mark all read
+              </Button>
+            )}
+            {notifications.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-all"
+                onClick={clearAllNotifications}
+              >
+                <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+                Clear
+              </Button>
+            )}
+          </div>
         </div>
-        <ScrollArea className="max-h-80">
+        <ScrollArea className="h-[450px] w-full">
           {!Array.isArray(notifications) || notifications.length === 0 ? (
             <div className="p-4 text-center text-sm text-muted-foreground">
               No notifications yet
@@ -103,22 +133,34 @@ export function NotificationBell() {
                     <p className="text-sm text-muted-foreground line-clamp-2">
                       {notification.message}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground/60 font-medium">
                       {formatDistanceToNow(new Date(notification.createdAt), {
                         addSuffix: true,
                       })}
                     </p>
                   </div>
-                  {!notification.isRead && (
+                  <div className="flex flex-col gap-1">
+                    {!notification.isRead && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-primary hover:bg-primary/10 transition-all"
+                        onClick={() => markAsRead(notification._id)}
+                        title="Mark as read"
+                      >
+                        <Check className="h-4 w-4" />
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6"
-                      onClick={() => markAsRead(notification._id)}
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+                      onClick={() => deleteNotification(notification._id)}
+                      title="Delete notification"
                     >
-                      <Check className="h-3 w-3" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
-                  )}
+                  </div>
                 </div>
               ))}
             </div>

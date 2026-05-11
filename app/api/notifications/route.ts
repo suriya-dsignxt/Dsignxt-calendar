@@ -63,3 +63,32 @@ export async function PATCH(request: Request) {
     )
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const authenticated = await isAuthenticated()
+    if (!authenticated) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    await connectToDatabase()
+    
+    const { id } = await request.json().catch(() => ({}))
+    
+    if (id) {
+      // Delete specific notification
+      await Notification.findByIdAndDelete(id)
+    } else {
+      // Clear all admin notifications
+      await Notification.deleteMany({ forAdmin: true })
+    }
+    
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Error clearing notifications:', error)
+    return NextResponse.json(
+      { error: 'Failed to clear notifications' },
+      { status: 500 }
+    )
+  }
+}
